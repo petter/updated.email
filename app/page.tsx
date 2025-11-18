@@ -16,11 +16,8 @@ const highlights = [
   },
 ];
 
-type PageProps = {
-  searchParams: Promise<{ newsletter?: string }>;
-};
-
-export default async function Home({ searchParams }: PageProps) {
+export default async function Home(props: PageProps<"/">) {
+  const { searchParams } = props;
   const newsletterState = (await searchParams).newsletter;
   const showSuccess = newsletterState === "success";
   const showError = newsletterState === "error";
