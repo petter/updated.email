@@ -1,6 +1,11 @@
 import { NewsletterForm } from "./newsletter-form";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 
 const highlights = [
   {
