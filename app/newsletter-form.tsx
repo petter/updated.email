@@ -5,6 +5,7 @@ import { submitNewsletterAction } from "./newsletter-action";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export function NewsletterForm() {
   const [state, formAction, isPending] = useActionState(
@@ -19,32 +20,28 @@ export function NewsletterForm() {
       aria-label="Join the updated.email waitlist"
     >
       {state?.success === true && (
-        <div
-          role="status"
-          className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-200"
-        >
-          {state.isNew ? (
-            <>
-              Thanks! We&apos;ve added you to the waitlist and sent you a
-              confirmation email.
-            </>
-          ) : (
-            <>
-              We appreciate your eagerness! You&apos;re already signed up with{" "}
-              <strong>{state.email}</strong>. We&apos;ll notify you when
-              updated.email is ready.
-            </>
-          )}
-        </div>
+        <Alert>
+          <AlertDescription>
+            {state.isNew ? (
+              <>
+                Thanks! We&apos;ve added you to the waitlist and sent you a
+                confirmation email.
+              </>
+            ) : (
+              <>
+                We appreciate your eagerness! You&apos;re already signed up with{" "}
+                <strong>{state.email}</strong>. We&apos;ll notify you when
+                updated.email is ready.
+              </>
+            )}
+          </AlertDescription>
+        </Alert>
       )}
 
       {state?.success === false && (
-        <div
-          role="status"
-          className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-900 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-200"
-        >
-          {state.error}
-        </div>
+        <Alert variant="destructive">
+          <AlertDescription>{state.error}</AlertDescription>
+        </Alert>
       )}
 
       <div className="space-y-3 text-left">
