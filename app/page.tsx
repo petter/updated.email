@@ -49,8 +49,8 @@ export default function Home() {
 
         <ul className="grid gap-4 sm:grid-cols-3">
           {highlights.map((highlight) => (
-            <li key={highlight.title}>
-              <Card>
+            <li key={highlight.title} className="h-full">
+              <Card className="h-full">
                 <CardHeader>
                   <CardTitle className="text-sm">{highlight.title}</CardTitle>
                   <CardDescription>{highlight.description}</CardDescription>
