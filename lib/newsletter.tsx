@@ -1,34 +1,24 @@
-import { NewsletterPreviewEmail } from "@/emails/newsletter-preview-email";
+import { WaitlistConfirmationEmail } from "@/emails/waitlist-confirmation-email";
 import { getFromAddress, getResendClient } from "@/lib/resend";
 
-type SendPreviewIssueEmailInput = {
+type SendWaitlistConfirmationEmailInput = {
   recipient: string;
-  previewUrl?: string;
-  packages?: string[];
 };
 
-type SendPreviewIssueEmailResult = {
+type SendWaitlistConfirmationEmailResult = {
   id?: string;
 };
 
-export async function sendPreviewIssueEmail({
+export async function sendWaitlistConfirmationEmail({
   recipient,
-  previewUrl,
-  packages = [],
-}: SendPreviewIssueEmailInput): Promise<SendPreviewIssueEmailResult> {
+}: SendWaitlistConfirmationEmailInput): Promise<SendWaitlistConfirmationEmailResult> {
   const resend = getResendClient();
   const { data, error } = await resend.emails.send({
     from: getFromAddress(),
     to: recipient,
-    subject: "Your updated.email preview is on the way",
-    text: buildPlainText({ previewUrl, packages }),
-    react: (
-      <NewsletterPreviewEmail
-        recipientEmail={recipient}
-        previewUrl={previewUrl}
-        packages={packages}
-      />
-    ),
+    subject: "You're signed up for updated.email",
+    text: buildPlainText(),
+    react: <WaitlistConfirmationEmail recipientEmail={recipient} />,
   });
 
   if (error) {
@@ -38,32 +28,13 @@ export async function sendPreviewIssueEmail({
   return { id: data?.id };
 }
 
-function buildPlainText({
-  previewUrl,
-  packages,
-}: {
-  previewUrl?: string;
-  packages: string[];
-}): string {
+function buildPlainText(): string {
   const lines = [
-    "Thanks for joining the updated.email preview!",
-    "We'll assemble your first issue with the packages you care about.",
+    "Thanks for joining the updated.email waitlist!",
+    "We've added you to our list and we're working hard to bring you a curated weekly brief on new releases, breaking changes, and adoption signals for the packages you depend on.",
+    "We'll let you know as soon as updated.email is ready. Until then, stay tuned!",
+    "— The updated.email team",
   ];
-
-  if (packages.length > 0) {
-    lines.push(
-      `Packages on your radar: ${packages
-        .map((pkg) => pkg.trim())
-        .filter(Boolean)
-        .join(", ")}`
-    );
-  }
-
-  if (previewUrl) {
-    lines.push(`You can always revisit the latest preview: ${previewUrl}`);
-  }
-
-  lines.push("Talk soon,\nThe updated.email team");
 
   return lines.join("\n\n");
 }

@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { submitNewsletterAction } from "./newsletter-action";
 
 const highlights = [
@@ -11,14 +12,23 @@ const highlights = [
   },
   {
     title: "Actionable alerts",
-    description: "Know when it’s time to upgrade or investigate a regression.",
+    description: "Know when it's time to upgrade or investigate a regression.",
   },
 ];
 
-export default async function Home({ searchParams }: PageProps<"/">) {
+type PageProps = {
+  searchParams: Promise<{ newsletter?: string }>;
+};
+
+export default async function Home({ searchParams }: PageProps) {
   const newsletterState = (await searchParams).newsletter;
   const showSuccess = newsletterState === "success";
   const showError = newsletterState === "error";
+
+  // Check if user is already signed up via cookie
+  const cookieStore = await cookies();
+  const waitlistEmail = cookieStore.get("waitlist_email")?.value;
+  const isAlreadySignedUp = !!waitlistEmail;
 
   return (
     <main className="flex min-h-screen items-center bg-linear-to-b from-neutral-50 via-white to-neutral-100 px-6 py-16 dark:from-neutral-950 dark:via-black dark:to-neutral-950">
@@ -47,7 +57,18 @@ export default async function Home({ searchParams }: PageProps<"/">) {
           className="space-y-6 rounded-3xl border border-neutral-200/80 bg-white/90 p-6 shadow-2xl shadow-neutral-900/5 backdrop-blur dark:border-neutral-800 dark:bg-neutral-900/60 md:p-10"
           aria-label="Join the updated.email waitlist"
         >
-          {(showSuccess || showError) && (
+          {isAlreadySignedUp && (
+            <div
+              role="status"
+              className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-200"
+            >
+              You&apos;re already signed up! We have{" "}
+              <strong>{waitlistEmail}</strong> on our waitlist. We&apos;ll
+              notify you when updated.email is ready.
+            </div>
+          )}
+
+          {(showSuccess || showError) && !isAlreadySignedUp && (
             <div
               role="status"
               className={`rounded-2xl border px-4 py-3 text-sm ${
@@ -57,10 +78,11 @@ export default async function Home({ searchParams }: PageProps<"/">) {
               }`}
             >
               {showSuccess
-                ? "Thanks! We just emailed you the latest preview issue."
-                : "We couldn’t send the preview email. Please try again."}
+                ? "Thanks! We've added you to the waitlist and sent you a confirmation email."
+                : "We couldn't add you to the waitlist. Please try again."}
             </div>
           )}
+
           <div className="space-y-3 text-left">
             <label
               htmlFor="email"
@@ -75,19 +97,22 @@ export default async function Home({ searchParams }: PageProps<"/">) {
                 type="email"
                 required
                 placeholder="you@company.com"
-                className="w-full flex-1 rounded-2xl border border-neutral-200/70 bg-white px-5 py-3 text-base text-neutral-900 outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-neutral-900 dark:border-neutral-800 dark:bg-neutral-900 dark:text-white dark:ring-offset-neutral-900"
+                defaultValue={waitlistEmail || ""}
+                disabled={isAlreadySignedUp}
+                className="w-full flex-1 rounded-2xl border border-neutral-200/70 bg-white px-5 py-3 text-base text-neutral-900 outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-neutral-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:bg-neutral-900 dark:text-white dark:ring-offset-neutral-900"
               />
               <button
                 type="submit"
-                className="w-full rounded-2xl bg-neutral-900 px-5 py-3 text-base font-semibold text-white transition hover:bg-neutral-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900 dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-200 sm:w-auto"
+                disabled={isAlreadySignedUp}
+                className="w-full rounded-2xl bg-neutral-900 px-5 py-3 text-base font-semibold text-white transition hover:bg-neutral-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-200 sm:w-auto"
               >
-                Get the updated.email preview
+                Join the waitlist
               </button>
             </div>
           </div>
           <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            updated.email will send a confirmation link so you can add packages
-            and fine-tune your feed. No spam, unsubscribe anytime.
+            We&apos;ll notify you when updated.email is ready. No spam,
+            unsubscribe anytime.
           </p>
         </form>
 
