@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { submitNewsletterAction } from "./newsletter-action";
+import { Button } from "@/components/ui/button";
 
 export function NewsletterForm() {
   const [state, formAction, isPending] = useActionState(
@@ -61,13 +62,13 @@ export function NewsletterForm() {
             disabled={isPending}
             className="w-full flex-1 rounded-2xl border border-neutral-200/70 bg-white px-5 py-3 text-base text-neutral-900 outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-neutral-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:bg-neutral-900 dark:text-white dark:ring-offset-neutral-900"
           />
-          <button
+          <Button
             type="submit"
             disabled={isPending}
-            className="w-full rounded-2xl bg-neutral-900 px-5 py-3 text-base font-semibold text-white transition hover:bg-neutral-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-200 sm:w-auto"
+            className="w-full sm:w-auto"
           >
             {isPending ? "Joining..." : "Join the waitlist"}
-          </button>
+          </Button>
         </div>
       </div>
       <p className="text-sm text-neutral-500 dark:text-neutral-400">
