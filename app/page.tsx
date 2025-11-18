@@ -25,7 +25,7 @@ export default async function Home({ searchParams }: PageProps<"/">) {
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-12">
         <header className="space-y-4 text-center">
           <span className="inline-flex items-center justify-center rounded-full border border-neutral-200/80 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-neutral-600 dark:border-neutral-800 dark:text-neutral-300">
-            Automated npm newsletter
+            updated.email
           </span>
           <div className="space-y-4">
             <h1 className="text-4xl font-semibold leading-tight text-neutral-900 dark:text-white sm:text-5xl">
@@ -35,13 +35,17 @@ export default async function Home({ searchParams }: PageProps<"/">) {
               Add the packages that matter, get a curated weekly brief on new
               releases, breaking changes, and adoption signals.
             </p>
+            <p className="text-base text-neutral-500 dark:text-neutral-400">
+              Purpose-built for developers who want an automated npm release
+              radar.
+            </p>
           </div>
         </header>
 
         <form
           action={submitNewsletterAction}
           className="space-y-6 rounded-3xl border border-neutral-200/80 bg-white/90 p-6 shadow-2xl shadow-neutral-900/5 backdrop-blur dark:border-neutral-800 dark:bg-neutral-900/60 md:p-10"
-          aria-label="Join the npm newsletter waitlist"
+          aria-label="Join the updated.email waitlist"
         >
           {(showSuccess || showError) && (
             <div
@@ -75,15 +79,15 @@ export default async function Home({ searchParams }: PageProps<"/">) {
               />
               <button
                 type="submit"
-                className="w-full rounded-2xl bg-neutral-900 px-5 py-3 text-base font-semibold text-white transition hover:bg-neutral-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900 dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-200 sm:w-auto"
+                className="w-full rounded-2xl bg-neutral-900 px-5 py-3 text-base font-semibold text-white transition hover:bg-neutral-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-neutral-900 dark:bg-white dark:text-neutral-950 dark:hover:bg-neutral-200 sm:w-auto"
               >
-                Get the preview issue
+                Get the updated.email preview
               </button>
             </div>
           </div>
           <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            We’ll send a confirmation link so you can add packages and fine-tune
-            your feed. No spam, unsubscribe anytime.
+            updated.email will send a confirmation link so you can add packages
+            and fine-tune your feed. No spam, unsubscribe anytime.
           </p>
         </form>
 

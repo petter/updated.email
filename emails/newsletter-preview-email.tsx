@@ -17,12 +17,13 @@ export function NewsletterPreviewEmail({
         <tbody>
           <tr>
             <td>
-              <p style={styles.kicker}>npm newsletter preview</p>
+              <p style={styles.kicker}>updated.email preview</p>
               <h1 style={styles.title}>You’re on the list! 🎉</h1>
               <p style={styles.paragraph}>
-                We’ll use <strong>{recipientEmail}</strong> for your preview
-                issues. Expect a weekly recap that highlights releases, breaking
-                changes, and adoption signals for the packages you depend on.
+                updated.email will use <strong>{recipientEmail}</strong> for
+                your preview issues. Expect a weekly recap that highlights
+                releases, breaking changes, and adoption signals for the
+                packages you depend on.
               </p>
 
               {packages.length > 0 ? (
@@ -53,11 +54,11 @@ export function NewsletterPreviewEmail({
               )}
 
               <p style={styles.paragraph}>
-                Until then, we’re combing through changelogs so you don’t have
-                to.
+                Until then, the updated.email feed is combing through changelogs
+                so you don’t have to.
               </p>
 
-              <p style={styles.signature}>— The npm newsletter team</p>
+              <p style={styles.signature}>— The updated.email team</p>
             </td>
           </tr>
         </tbody>

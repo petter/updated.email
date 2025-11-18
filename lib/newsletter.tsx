@@ -20,7 +20,7 @@ export async function sendPreviewIssueEmail({
   const { data, error } = await resend.emails.send({
     from: getFromAddress(),
     to: recipient,
-    subject: "Your npm newsletter preview is on the way",
+    subject: "Your updated.email preview is on the way",
     text: buildPlainText({ previewUrl, packages }),
     react: (
       <NewsletterPreviewEmail
@@ -46,7 +46,7 @@ function buildPlainText({
   packages: string[];
 }): string {
   const lines = [
-    "Thanks for joining the npm newsletter preview!",
+    "Thanks for joining the updated.email preview!",
     "We'll assemble your first issue with the packages you care about.",
   ];
 
@@ -63,7 +63,7 @@ function buildPlainText({
     lines.push(`You can always revisit the latest preview: ${previewUrl}`);
   }
 
-  lines.push("Talk soon,\nThe npm newsletter team");
+  lines.push("Talk soon,\nThe updated.email team");
 
   return lines.join("\n\n");
 }
