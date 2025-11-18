@@ -12,13 +12,13 @@ export const addToWaitlist = mutation({
       .first();
 
     if (existing) {
-      return existing._id;
+      return { id: existing._id, isNew: false };
     }
 
     const waitlistId = await ctx.db.insert("waitlist", {
       email: args.email,
     });
 
-    return waitlistId;
+    return { id: waitlistId, isNew: true };
   },
 });

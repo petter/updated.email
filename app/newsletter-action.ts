@@ -1,41 +1,54 @@
 "use server";
 
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "@/convex/_generated/api";
 import { sendWaitlistConfirmationEmail } from "@/lib/newsletter";
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
-export async function submitNewsletterAction(formData: FormData) {
+export type NewsletterActionResult =
+  | { success: true; isNew: boolean; email: string }
+  | { success: false; error: string };
+
+export async function submitNewsletterAction(
+  _prevState: NewsletterActionResult | null,
+  formData: FormData
+): Promise<NewsletterActionResult> {
   const email = extractEmail(formData);
 
   if (!email) {
-    redirect("/?newsletter=error");
+    return { success: false, error: "Please provide a valid email address." };
   }
 
   try {
     // Add email to Convex waitlist
-    await convex.mutation(api.waitlist.addToWaitlist, { email });
+    const result = await convex.mutation(api.waitlist.addToWaitlist, {
+      email,
+    });
 
-    // Send confirmation email
+    // Send confirmation email (even if they're already signed up, in case they didn't receive it before)
     await sendWaitlistConfirmationEmail({ recipient: email });
 
-    // Set cookie to remember the user
-    const cookieStore = await cookies();
-    cookieStore.set("waitlist_email", email, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 365, // 1 year
-    });
+    if (result.isNew) {
+      return {
+        success: true,
+        isNew: true,
+        email,
+      };
+    } else {
+      return {
+        success: true,
+        isNew: false,
+        email,
+      };
+    }
   } catch (error) {
     console.error("waitlist signup failed", error);
-    redirect("/?newsletter=error");
+    return {
+      success: false,
+      error: "We couldn't add you to the waitlist. Please try again.",
+    };
   }
-
-  redirect("/?newsletter=success");
 }
 
 function extractEmail(formData: FormData): string | null {
