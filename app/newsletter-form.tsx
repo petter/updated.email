@@ -3,6 +3,8 @@
 import { useActionState } from "react";
 import { submitNewsletterAction } from "./newsletter-action";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export function NewsletterForm() {
   const [state, formAction, isPending] = useActionState(
@@ -46,21 +48,16 @@ export function NewsletterForm() {
       )}
 
       <div className="space-y-3 text-left">
-        <label
-          htmlFor="email"
-          className="text-sm font-medium text-neutral-700 dark:text-neutral-200"
-        >
-          Email address
-        </label>
+        <Label htmlFor="email">Email address</Label>
         <div className="flex flex-col gap-3 sm:flex-row">
-          <input
+          <Input
             id="email"
             name="email"
             type="email"
             required
             placeholder="you@company.com"
             disabled={isPending}
-            className="w-full flex-1 rounded-2xl border border-neutral-200/70 bg-white px-5 py-3 text-base text-neutral-900 outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-neutral-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-neutral-800 dark:bg-neutral-900 dark:text-white dark:ring-offset-neutral-900"
+            className="w-full flex-1"
           />
           <Button
             type="submit"
