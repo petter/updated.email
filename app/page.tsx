@@ -1,3 +1,5 @@
+import { submitNewsletterAction } from "./newsletter-action";
+
 const highlights = [
   {
     title: "Fresh releases",
@@ -13,9 +15,13 @@ const highlights = [
   },
 ];
 
-export default function Home() {
+export default async function Home({ searchParams }: PageProps<"/">) {
+  const newsletterState = (await searchParams).newsletter;
+  const showSuccess = newsletterState === "success";
+  const showError = newsletterState === "error";
+
   return (
-    <main className="flex min-h-screen items-center bg-gradient-to-b from-neutral-50 via-white to-neutral-100 px-6 py-16 dark:from-neutral-950 dark:via-black dark:to-neutral-950">
+    <main className="flex min-h-screen items-center bg-linear-to-b from-neutral-50 via-white to-neutral-100 px-6 py-16 dark:from-neutral-950 dark:via-black dark:to-neutral-950">
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-12">
         <header className="space-y-4 text-center">
           <span className="inline-flex items-center justify-center rounded-full border border-neutral-200/80 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-neutral-600 dark:border-neutral-800 dark:text-neutral-300">
@@ -33,11 +39,24 @@ export default function Home() {
         </header>
 
         <form
-          method="post"
-          action="/api/newsletter"
+          action={submitNewsletterAction}
           className="space-y-6 rounded-3xl border border-neutral-200/80 bg-white/90 p-6 shadow-2xl shadow-neutral-900/5 backdrop-blur dark:border-neutral-800 dark:bg-neutral-900/60 md:p-10"
           aria-label="Join the npm newsletter waitlist"
         >
+          {(showSuccess || showError) && (
+            <div
+              role="status"
+              className={`rounded-2xl border px-4 py-3 text-sm ${
+                showSuccess
+                  ? "border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-200"
+                  : "border-rose-200 bg-rose-50 text-rose-900 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-200"
+              }`}
+            >
+              {showSuccess
+                ? "Thanks! We just emailed you the latest preview issue."
+                : "We couldn’t send the preview email. Please try again."}
+            </div>
+          )}
           <div className="space-y-3 text-left">
             <label
               htmlFor="email"

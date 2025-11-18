@@ -20,6 +20,16 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Email preview sending
+
+1. Copy `env.sample` to `.env.local` and add your Resend credentials:
+   - `RESEND_API_KEY` &mdash; grab this from the Resend dashboard.
+   - (Optional) `RESEND_FROM_EMAIL` &mdash; branded sender such as `NPM Newsletter <hello@example.com>`.
+2. Start the dev server with `bun dev` (or `npm run dev`).
+3. Submit the home page form, which triggers a server action that calls Resend.
+
+The action renders the template in `emails/newsletter-preview-email.tsx` and displays an inline success/error flash message once Resend responds. For programmatic usage, import and call `sendPreviewIssueEmail` directly.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
