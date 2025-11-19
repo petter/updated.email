@@ -15,7 +15,7 @@ export function LoginEmail({ loginLink }: LoginEmailProps) {
               <h1 style={styles.title}>Sign in to your account</h1>
               <p style={styles.paragraph}>
                 Click the link below to sign in to your updated.email dashboard.
-                This link will expire in 1 hour.
+                This link will expire in 30 days.
               </p>
               <p style={styles.paragraph}>
                 <a href={loginLink} style={styles.link}>

@@ -62,6 +62,15 @@ export async function sendNewsletterToSubscriber(
     ? `${env.NEXT_PUBLIC_APP_URL}/unsubscribe/${unsubscribeTokenResult.token}`
     : undefined;
 
+  // Generate dashboard magic link
+  const loginTokenResult = await convex.mutation(api.auth.requestLogin, {
+    email,
+  });
+
+  const dashboardLink: string | undefined = loginTokenResult.token
+    ? `${env.NEXT_PUBLIC_APP_URL}/login/${loginTokenResult.token}`
+    : undefined;
+
   // Send email using Resend
   const resend = getResendClient();
   const { data, error } = await resend.emails.send({
@@ -72,6 +81,7 @@ export async function sendNewsletterToSubscriber(
       <NewsletterEmail
         packageUpdates={packageUpdates}
         unsubscribeLink={unsubscribeLink}
+        dashboardLink={dashboardLink}
       />
     ),
   });

@@ -8,11 +8,13 @@ type NewsletterEmailProps = {
     PackageUpdateResult & { changelogs: Record<string, ChangelogEntry> }
   >;
   unsubscribeLink?: string;
+  dashboardLink?: string;
 };
 
 export function NewsletterEmail({
   packageUpdates,
   unsubscribeLink,
+  dashboardLink,
 }: NewsletterEmailProps) {
   const hasUpdates = packageUpdates.some(
     (pkg) => pkg.versions.length > 0 && !pkg.error,
@@ -94,6 +96,13 @@ export function NewsletterEmail({
                     );
                   })}
                 </>
+              )}
+              {dashboardLink && (
+                <div style={styles.dashboardSection}>
+                  <a href={dashboardLink} style={styles.dashboardButton}>
+                    Go to dashboard
+                  </a>
+                </div>
               )}
               <EmailFooter unsubscribeLink={unsubscribeLink} />
               <p style={styles.signature}>— The updated.email team</p>
@@ -188,6 +197,22 @@ const styles: Record<string, CSSProperties> = {
     color: "#0070f3",
     textDecoration: "none",
     fontWeight: 500,
+  },
+  dashboardSection: {
+    marginTop: "32px",
+    marginBottom: "24px",
+    textAlign: "center" as const,
+  },
+  dashboardButton: {
+    display: "inline-block",
+    backgroundColor: "#0070f3",
+    color: "#ffffff",
+    fontSize: "15px",
+    fontWeight: 600,
+    padding: "12px 24px",
+    borderRadius: "8px",
+    textDecoration: "none",
+    lineHeight: 1.5,
   },
   signature: {
     fontWeight: 600,

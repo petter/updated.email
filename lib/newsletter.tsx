@@ -105,7 +105,7 @@ function buildVerificationPlainText(link: string): string {
 }
 
 function buildLoginPlainText(link: string): string {
-  return `Click the link below to sign in to your updated.email dashboard. This link will expire in 1 hour:\n\n${link}\n\nIf you didn't request this login link, you can safely ignore this email.\n\n— The updated.email team`;
+  return `Click the link below to sign in to your updated.email dashboard. This link will expire in 30 days:\n\n${link}\n\nIf you didn't request this login link, you can safely ignore this email.\n\n— The updated.email team`;
 }
 
 export async function generateUnsubscribeLink(

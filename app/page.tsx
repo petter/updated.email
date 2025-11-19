@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardDescription,
@@ -24,7 +26,16 @@ const highlights = [
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen items-center bg-linear-to-b from-neutral-50 via-white to-neutral-100 px-6 py-16 dark:from-neutral-950 dark:via-black dark:to-neutral-950">
+    <main className="min-h-screen bg-linear-to-b from-neutral-50 via-white to-neutral-100 px-6 py-16 dark:from-neutral-950 dark:via-black dark:to-neutral-950">
+      {/* Top navigation */}
+      <div className="mx-auto mb-12 flex w-full max-w-3xl items-center justify-end">
+        <Link href="/dashboard">
+          <Button variant="ghost" size="sm">
+            Dashboard
+          </Button>
+        </Link>
+      </div>
+
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-12">
         <header className="space-y-4 text-center">
           <Badge variant="outline" className="uppercase tracking-wide">

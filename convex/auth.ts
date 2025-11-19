@@ -13,7 +13,7 @@ export const requestLogin = mutation({
     await ctx.db.insert("login_tokens", {
       token,
       email: args.email,
-      expiresAt: Date.now() + 1000 * 60 * 60, // 1 hour
+      expiresAt: Date.now() + 1000 * 60 * 60 * 24 * 30, // 30 days
     });
 
     return { success: true, token };
