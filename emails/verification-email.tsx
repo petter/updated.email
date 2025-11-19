@@ -1,10 +1,15 @@
 import type { CSSProperties } from "react";
+import { EmailFooter } from "./email-footer";
 
 type VerificationEmailProps = {
   validationLink: string;
+  unsubscribeLink?: string;
 };
 
-export function VerificationEmail({ validationLink }: VerificationEmailProps) {
+export function VerificationEmail({
+  validationLink,
+  unsubscribeLink,
+}: VerificationEmailProps) {
   return (
     <div style={styles.body}>
       <table width="100%" cellPadding="0" cellSpacing="0" style={styles.card}>
@@ -26,6 +31,7 @@ export function VerificationEmail({ validationLink }: VerificationEmailProps) {
                 If you didn't sign up for this, you can safely ignore this
                 email.
               </p>
+              <EmailFooter unsubscribeLink={unsubscribeLink} />
               <p style={styles.signature}>— The updated.email team</p>
             </td>
           </tr>

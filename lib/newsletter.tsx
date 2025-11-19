@@ -1,7 +1,16 @@
+import { ConvexHttpClient } from "convex/browser";
+import { api } from "@/convex/_generated/api";
 import { LoginEmail } from "@/emails/login-email";
 import { VerificationEmail } from "@/emails/verification-email";
 import { WaitlistConfirmationEmail } from "@/emails/waitlist-confirmation-email";
 import { getFromAddress, getResendClient } from "@/lib/resend";
+
+const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
+if (!convexUrl) {
+  throw new Error("NEXT_PUBLIC_CONVEX_URL is not set");
+}
+
+const convex = new ConvexHttpClient(convexUrl);
 
 type SendWaitlistConfirmationEmailInput = {
   recipient: string;
@@ -101,4 +110,25 @@ function buildVerificationPlainText(link: string): string {
 
 function buildLoginPlainText(link: string): string {
   return `Click the link below to sign in to your updated.email dashboard. This link will expire in 1 hour:\n\n${link}\n\nIf you didn't request this login link, you can safely ignore this email.\n\n— The updated.email team`;
+}
+
+export async function generateUnsubscribeLink(
+  email: string,
+): Promise<string | null> {
+  try {
+    const result = await convex.mutation(
+      api.subscriptions.generateUnsubscribeToken,
+      { email },
+    );
+
+    if (!result.success || !result.token) {
+      console.error("Failed to generate unsubscribe token:", result.message);
+      return null;
+    }
+
+    return `${process.env.NEXT_PUBLIC_APP_URL}/unsubscribe/${result.token}`;
+  } catch (error) {
+    console.error("Failed to generate unsubscribe link:", error);
+    return null;
+  }
 }
