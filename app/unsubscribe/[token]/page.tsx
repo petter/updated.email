@@ -1,6 +1,5 @@
 import { ConvexHttpClient } from "convex/browser";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { api } from "@/convex/_generated/api";
 import { env } from "@/env";
