@@ -1,26 +1,15 @@
 import { Resend } from "resend";
+import { env } from "@/env";
 
 let client: Resend | undefined;
 
-function assertApiKey(): string {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
-    throw new Error(
-      "RESEND_API_KEY is missing. Add it to your .env.local file to send emails.",
-    );
-  }
-  return apiKey;
-}
-
 export function getResendClient(): Resend {
   if (!client) {
-    client = new Resend(assertApiKey());
+    client = new Resend(env.RESEND_API_KEY);
   }
   return client;
 }
 
 export function getFromAddress(): string {
-  return (
-    process.env.RESEND_FROM_EMAIL ?? "NPM Newsletter <onboarding@resend.dev>"
-  );
+  return env.RESEND_FROM_EMAIL ?? "NPM Newsletter <onboarding@resend.dev>";
 }

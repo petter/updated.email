@@ -3,14 +3,10 @@ import { api } from "@/convex/_generated/api";
 import { LoginEmail } from "@/emails/login-email";
 import { VerificationEmail } from "@/emails/verification-email";
 import { WaitlistConfirmationEmail } from "@/emails/waitlist-confirmation-email";
+import { env } from "@/env";
 import { getFromAddress, getResendClient } from "@/lib/resend";
 
-const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
-if (!convexUrl) {
-  throw new Error("NEXT_PUBLIC_CONVEX_URL is not set");
-}
-
-const convex = new ConvexHttpClient(convexUrl);
+const convex = new ConvexHttpClient(env.NEXT_PUBLIC_CONVEX_URL);
 
 type SendWaitlistConfirmationEmailInput = {
   recipient: string;
@@ -54,7 +50,7 @@ export async function sendVerificationEmail({
   token,
 }: SendVerificationEmailInput): Promise<SendWaitlistConfirmationEmailResult> {
   const resend = getResendClient();
-  const link = `${process.env.NEXT_PUBLIC_APP_URL}/verify/${token}`;
+  const link = `${env.NEXT_PUBLIC_APP_URL}/verify/${token}`;
 
   const { data, error } = await resend.emails.send({
     from: getFromAddress(),
@@ -76,7 +72,7 @@ export async function sendLoginEmail({
   token,
 }: SendLoginEmailInput): Promise<SendWaitlistConfirmationEmailResult> {
   const resend = getResendClient();
-  const link = `${process.env.NEXT_PUBLIC_APP_URL}/login/${token}`;
+  const link = `${env.NEXT_PUBLIC_APP_URL}/login/${token}`;
 
   const { data, error } = await resend.emails.send({
     from: getFromAddress(),
@@ -126,7 +122,7 @@ export async function generateUnsubscribeLink(
       return null;
     }
 
-    return `${process.env.NEXT_PUBLIC_APP_URL}/unsubscribe/${result.token}`;
+    return `${env.NEXT_PUBLIC_APP_URL}/unsubscribe/${result.token}`;
   } catch (error) {
     console.error("Failed to generate unsubscribe link:", error);
     return null;

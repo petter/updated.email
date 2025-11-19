@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { env } from "@/env";
 import type { PackageVersion } from "./npm";
 import type { ChangelogEntry } from "./types";
 
@@ -77,8 +78,8 @@ export async function getChangelogs(
       Accept: "application/vnd.github.html+json",
     };
 
-    if (process.env.GITHUB_TOKEN) {
-      headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
+    if (env.GITHUB_TOKEN) {
+      headers.Authorization = `Bearer ${env.GITHUB_TOKEN}`;
     }
 
     const response = await fetch(apiUrl, {

@@ -1,13 +1,9 @@
 import { ConvexHttpClient } from "convex/browser";
 import { cookies } from "next/headers";
 import { api } from "@/convex/_generated/api";
+import { env } from "@/env";
 
-const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
-if (!convexUrl) {
-  throw new Error("NEXT_PUBLIC_CONVEX_URL is not set");
-}
-
-const convex = new ConvexHttpClient(convexUrl);
+const convex = new ConvexHttpClient(env.NEXT_PUBLIC_CONVEX_URL);
 
 const SESSION_COOKIE_NAME = "updated.email.session";
 
@@ -21,7 +17,7 @@ export async function setSessionCookie(sessionId: string): Promise<void> {
   const cookieStore = await cookies();
   cookieStore.set(SESSION_COOKIE_NAME, sessionId, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: env.NODE_ENV === "production",
     sameSite: "lax",
     maxAge: 60 * 60 * 24 * 30, // 30 days
     path: "/",
