@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as auth from "../auth.js";
 import type * as subscriptions from "../subscriptions.js";
 import type * as waitlist from "../waitlist.js";
 
@@ -18,6 +19,7 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  auth: typeof auth;
   subscriptions: typeof subscriptions;
   waitlist: typeof waitlist;
 }>;
