@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -13,51 +12,6 @@ import { LoginForm } from "./login-form";
 import { LogoutButton } from "./logout-button";
 import { SubscribedPackages } from "./subscribed-packages";
 import { UnsubscribeButton } from "./unsubscribe-button";
-
-// Dummy data for previous emails
-const previousEmails = [
-  {
-    id: "1",
-    subject: "Weekly Update: React 19.2.0 Released",
-    sentAt: "2024-01-20T10:00:00Z",
-    packages: ["react"],
-    preview:
-      "React 19.2.0 has been released with performance improvements and bug fixes...",
-  },
-  {
-    id: "2",
-    subject: "Weekly Update: Next.js 16.0.3 & TypeScript 5.6.3",
-    sentAt: "2024-01-19T10:00:00Z",
-    packages: ["next", "typescript"],
-    preview:
-      "This week brings updates to Next.js and TypeScript with new features...",
-  },
-  {
-    id: "3",
-    subject: "Weekly Update: Tailwind CSS 4.0.0 Released",
-    sentAt: "2024-01-17T10:00:00Z",
-    packages: ["tailwindcss"],
-    preview: "Tailwind CSS 4.0.0 is now available with major improvements...",
-  },
-  {
-    id: "4",
-    subject: "Weekly Update: All Packages",
-    sentAt: "2024-01-15T10:00:00Z",
-    packages: ["react", "next", "typescript", "tailwindcss"],
-    preview: "Your weekly digest of updates across all subscribed packages...",
-  },
-];
-
-function formatDateTime(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
 
 export default async function Dashboard({
   searchParams,
@@ -121,7 +75,7 @@ export default async function Dashboard({
               Dashboard
             </h1>
             <p className="mt-2 text-lg text-neutral-600 dark:text-neutral-300">
-              Manage your package subscriptions and view email history
+              Manage your package subscriptions
             </p>
             <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
               Signed in as {email}
@@ -161,52 +115,6 @@ export default async function Dashboard({
 
         {/* Subscribed Packages Section */}
         <SubscribedPackages email={email} />
-
-        {/* Previous Emails Section */}
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-semibold text-neutral-900 dark:text-white">
-              Previous Emails
-            </h2>
-            <Badge variant="outline">{previousEmails.length} emails</Badge>
-          </div>
-          <div className="space-y-4">
-            {previousEmails.map((email) => (
-              <Card
-                key={email.id}
-                className="hover:shadow-md transition-shadow"
-              >
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="text-lg">{email.subject}</CardTitle>
-                      <CardDescription className="mt-2">
-                        {email.preview}
-                      </CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-sm text-neutral-600 dark:text-neutral-400">
-                      {formatDateTime(email.sentAt)}
-                    </span>
-                    <span className="text-neutral-400 dark:text-neutral-600">
-                      •
-                    </span>
-                    <div className="flex flex-wrap gap-1">
-                      {email.packages.map((pkg) => (
-                        <Badge key={pkg} variant="outline" className="text-xs">
-                          {pkg}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </section>
       </div>
     </main>
   );
