@@ -267,3 +267,38 @@ export const getPackageSubscriptions = query({
     return subscriptions.sort((a, b) => b.subscribedAt - a.subscribedAt);
   },
 });
+
+export const getAllActiveSubscriptions = query({
+  args: {},
+  handler: async (ctx) => {
+    const subscriptions = await ctx.db
+      .query("subscriptions")
+      .filter((q) => q.eq(q.field("status"), "subscribed"))
+      .collect();
+
+    return subscriptions;
+  },
+});
+
+export const updateLastNewsletterSentAt = mutation({
+  args: {
+    email: v.string(),
+    timestamp: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const subscription = await ctx.db
+      .query("subscriptions")
+      .withIndex("by_email", (q) => q.eq("email", args.email))
+      .first();
+
+    if (!subscription) {
+      return { success: false, message: "Subscription not found" };
+    }
+
+    await ctx.db.patch(subscription._id, {
+      lastNewsletterSentAt: args.timestamp,
+    });
+
+    return { success: true };
+  },
+});
