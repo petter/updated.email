@@ -10,6 +10,7 @@ export const env = createEnv({
     RESEND_API_KEY: z.string().min(1),
     RESEND_FROM_EMAIL: z.string().optional(),
     GITHUB_TOKEN: z.string().optional(),
+    CRON_SECRET: z.string().optional(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
@@ -33,6 +34,7 @@ export const env = createEnv({
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     RESEND_FROM_EMAIL: process.env.RESEND_FROM_EMAIL,
     GITHUB_TOKEN: process.env.GITHUB_TOKEN,
+    CRON_SECRET: process.env.CRON_SECRET,
     NODE_ENV: process.env.NODE_ENV,
     NEXT_PUBLIC_CONVEX_URL: process.env.NEXT_PUBLIC_CONVEX_URL,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
