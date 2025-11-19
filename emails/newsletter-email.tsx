@@ -67,9 +67,9 @@ export function NewsletterEmail({
                                 </span>
                               </div>
                               {changelog ? (
-                                // biome-ignore lint/security/noDangerouslySetInnerHtml: Changelog content is HTML from GitHub releases API
                                 <div
                                   style={styles.changelog}
+                                  // biome-ignore lint/security/noDangerouslySetInnerHtml: Changelog content is HTML from GitHub releases API
                                   dangerouslySetInnerHTML={{
                                     __html: changelog.content,
                                   }}

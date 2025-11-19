@@ -517,11 +517,12 @@ export const getAllNewsletterSends = query({
       .collect();
 
     // Filter by date range if provided
-    if (args.startDate) {
-      sends = sends.filter((send) => send.sentAt >= args.startDate!);
+    const { startDate, endDate } = args;
+    if (startDate) {
+      sends = sends.filter((send) => send.sentAt >= startDate);
     }
-    if (args.endDate) {
-      sends = sends.filter((send) => send.sentAt <= args.endDate!);
+    if (endDate) {
+      sends = sends.filter((send) => send.sentAt <= endDate);
     }
 
     // Sort by sentAt descending (most recent first)
