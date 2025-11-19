@@ -14,6 +14,7 @@ export default defineSchema({
     ),
     subscribedAt: v.optional(v.number()),
     unsubscribedAt: v.optional(v.number()),
+    lastNewsletterSentAt: v.optional(v.number()),
   }).index("by_email", ["email"]),
   verification_tokens: defineTable({
     token: v.string(),
