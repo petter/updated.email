@@ -202,3 +202,68 @@ export const unsubscribeByEmail = mutation({
     return { success: true };
   },
 });
+
+// Package subscription functions
+export const addPackageSubscription = mutation({
+  args: {
+    email: v.string(),
+    packageName: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // Check if package subscription already exists
+    const existing = await ctx.db
+      .query("package_subscriptions")
+      .withIndex("by_email_and_package", (q) =>
+        q.eq("email", args.email).eq("packageName", args.packageName),
+      )
+      .first();
+
+    if (existing) {
+      return { success: false, message: "Package already subscribed" };
+    }
+
+    // Add package subscription
+    await ctx.db.insert("package_subscriptions", {
+      email: args.email,
+      packageName: args.packageName,
+      subscribedAt: Date.now(),
+    });
+
+    return { success: true };
+  },
+});
+
+export const removePackageSubscription = mutation({
+  args: {
+    email: v.string(),
+    packageName: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const subscription = await ctx.db
+      .query("package_subscriptions")
+      .withIndex("by_email_and_package", (q) =>
+        q.eq("email", args.email).eq("packageName", args.packageName),
+      )
+      .first();
+
+    if (!subscription) {
+      return { success: false, message: "Package subscription not found" };
+    }
+
+    await ctx.db.delete(subscription._id);
+    return { success: true };
+  },
+});
+
+export const getPackageSubscriptions = query({
+  args: { email: v.string() },
+  handler: async (ctx, args) => {
+    const subscriptions = await ctx.db
+      .query("package_subscriptions")
+      .withIndex("by_email", (q) => q.eq("email", args.email))
+      .collect();
+
+    // Sort by subscribedAt descending (most recent first)
+    return subscriptions.sort((a, b) => b.subscribedAt - a.subscribedAt);
+  },
+});
