@@ -78,7 +78,7 @@ export const verify = mutation({
     // Clean up the used token
     await ctx.db.delete(tokenRecord._id);
 
-    return { success: true };
+    return { success: true, email: tokenRecord.email };
   },
 });
 

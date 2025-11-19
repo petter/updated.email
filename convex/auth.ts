@@ -83,6 +83,28 @@ export const getSession = query({
   },
 });
 
+export const createSession = mutation({
+  args: {
+    email: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // Generate session ID
+    const sessionId = crypto.randomUUID();
+    const now = Date.now();
+    const expiresAt = now + 1000 * 60 * 60 * 24 * 30; // 30 days
+
+    // Create session
+    await ctx.db.insert("sessions", {
+      sessionId,
+      email: args.email,
+      createdAt: now,
+      expiresAt,
+    });
+
+    return { success: true, sessionId };
+  },
+});
+
 export const deleteSession = mutation({
   args: { sessionId: v.string() },
   handler: async (ctx, args) => {
