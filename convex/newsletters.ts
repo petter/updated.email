@@ -294,11 +294,10 @@ export const sendNewsletterToSubscriber = action({
     }
 
     // Generate unsubscribe link
-    const unsubscribeTokenResult = (await ctx.runMutation(
-      // biome-ignore lint/suspicious/noExplicitAny: Circular type reference requires type assertion
-      api.subscriptions.generateUnsubscribeToken as any,
+    const unsubscribeTokenResult = await ctx.runMutation(
+      api.subscriptions.generateUnsubscribeToken,
       { email: args.email },
-    )) as { success: boolean; token?: string; message?: string };
+    );
 
     const unsubscribeLink: string | undefined = unsubscribeTokenResult.success
       ? `${APP_URL}/unsubscribe/${unsubscribeTokenResult.token}`
@@ -331,7 +330,7 @@ export const sendNewsletterToSubscriber = action({
     );
 
     if (!response.ok) {
-      const errorData = (await response.json()) as { error?: string };
+      const errorData = await response.json();
       const errorMessage = errorData.error || "Failed to send email";
       console.error(
         `Failed to send newsletter to ${args.email}:`,
@@ -354,7 +353,7 @@ export const sendNewsletterToSubscriber = action({
       };
     }
 
-    const result = (await response.json()) as { emailId?: string };
+    const result = await response.json();
 
     // Record successful send
     await ctx.runMutation(api.newsletters.recordNewsletterSend, {
@@ -386,8 +385,7 @@ export const sendNewslettersToAllSubscribers = action({
   }> => {
     // Get all active subscriptions
     const subscriptions = await ctx.runQuery(
-      // biome-ignore lint/suspicious/noExplicitAny: Circular type reference requires type assertion
-      api.subscriptions.getAllActiveSubscriptions as any,
+      api.subscriptions.getAllActiveSubscriptions,
     );
 
     const now = Date.now();
@@ -399,8 +397,7 @@ export const sendNewslettersToAllSubscribers = action({
     for (const subscription of subscriptions) {
       // Get package subscriptions for this user
       const packageSubscriptions = await ctx.runQuery(
-        // biome-ignore lint/suspicious/noExplicitAny: Circular type reference requires type assertion
-        api.subscriptions.getPackageSubscriptions as any,
+        api.subscriptions.getPackageSubscriptions,
         { email: subscription.email },
       );
 
@@ -420,26 +417,21 @@ export const sendNewslettersToAllSubscribers = action({
       );
 
       try {
-        const result = (await ctx.runAction(
-          // biome-ignore lint/suspicious/noExplicitAny: Circular type reference requires type assertion
-          api.newsletters.sendNewsletterToSubscriber as any,
+        const result = await ctx.runAction(
+          api.newsletters.sendNewsletterToSubscriber,
           {
             email: subscription.email,
             packageNames,
             since,
           },
-        )) as { success: boolean; emailId?: string; error?: string };
+        );
 
         if (result.success) {
           // Update last newsletter sent date
-          await ctx.runMutation(
-            // biome-ignore lint/suspicious/noExplicitAny: Circular type reference requires type assertion
-            api.subscriptions.updateLastNewsletterSentAt as any,
-            {
-              email: subscription.email,
-              timestamp: now,
-            },
-          );
+          await ctx.runMutation(api.subscriptions.updateLastNewsletterSentAt, {
+            email: subscription.email,
+            timestamp: now,
+          });
           successCount++;
         } else {
           errorCount++;
