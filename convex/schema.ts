@@ -7,8 +7,13 @@ export default defineSchema({
   }).index("by_email", ["email"]),
   subscriptions: defineTable({
     email: v.string(),
-    status: v.union(v.literal("pending"), v.literal("subscribed")),
+    status: v.union(
+      v.literal("pending"),
+      v.literal("subscribed"),
+      v.literal("unsubscribed"),
+    ),
     subscribedAt: v.optional(v.number()),
+    unsubscribedAt: v.optional(v.number()),
   }).index("by_email", ["email"]),
   verification_tokens: defineTable({
     token: v.string(),
@@ -26,4 +31,9 @@ export default defineSchema({
     createdAt: v.number(),
     expiresAt: v.number(),
   }).index("by_sessionId", ["sessionId"]),
+  unsubscribe_tokens: defineTable({
+    token: v.string(),
+    email: v.string(),
+    expiresAt: v.optional(v.number()),
+  }).index("by_token", ["token"]),
 });
