@@ -9,13 +9,39 @@ const convex = new ConvexHttpClient(env.NEXT_PUBLIC_CONVEX_URL);
  * Vercel cron job endpoint that sends newsletters to all subscribers.
  * Runs every Sunday at 12:00 UTC.
  *
- * Vercel cron jobs are protected by default - only Vercel's infrastructure
- * can call this endpoint. No additional authentication needed.
- *
- * To test locally, you can call this endpoint directly:
- * curl http://localhost:3000/api/cron/send-newsletters
+ * This endpoint is secured using a bearer token in the Authorization header.
+ * Vercel automatically includes the CRON_SECRET as a bearer token when invoking
+ * cron jobs. For local testing, include the Authorization header:
+ * curl -H "Authorization: Bearer YOUR_CRON_SECRET" http://localhost:3000/api/cron/send-newsletters
  */
-export async function GET(_request: NextRequest) {
+export async function POST(request: NextRequest) {
+  // Verify authorization header
+  const authHeader = request.headers.get("authorization");
+  const expectedAuth = `Bearer ${env.CRON_SECRET}`;
+
+  if (!env.CRON_SECRET) {
+    console.error("CRON_SECRET environment variable is not set");
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Server configuration error",
+        timestamp: new Date().toISOString(),
+      },
+      { status: 500 },
+    );
+  }
+
+  if (authHeader !== expectedAuth) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Unauthorized",
+        timestamp: new Date().toISOString(),
+      },
+      { status: 401 },
+    );
+  }
+
   try {
     // Call the Convex action to send newsletters
     const result = await convex.action(
