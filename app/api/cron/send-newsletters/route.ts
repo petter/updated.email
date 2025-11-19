@@ -20,11 +20,10 @@ export async function GET(_request: NextRequest) {
     // Call the Convex action to send newsletters
     const result = await convex.action(
       api.newsletters.sendNewslettersToAllSubscribers,
-      {}
+      {},
     );
 
     return NextResponse.json({
-      success: true,
       ...result,
       timestamp: new Date().toISOString(),
     });
@@ -36,7 +35,7 @@ export async function GET(_request: NextRequest) {
         error: error instanceof Error ? error.message : "Unknown error",
         timestamp: new Date().toISOString(),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

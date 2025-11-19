@@ -1,6 +1,6 @@
 import { render } from "@react-email/render";
 import { type NextRequest, NextResponse } from "next/server";
-import type { NewsletterEmail } from "@/emails/newsletter-email";
+import { NewsletterEmail } from "@/emails/newsletter-email";
 import type { PackageUpdateResult } from "@/lib/npm";
 import { getFromAddress, getResendClient } from "@/lib/resend";
 import type { ChangelogEntry } from "@/lib/types";
@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
   // Vercel cron jobs send CRON_SECRET in the Authorization header
   const authHeader = request.headers.get("authorization");
   const cronSecret = process.env.CRON_SECRET;
-  
+
   if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
     return NextResponse.json(
       { success: false, error: "Unauthorized" },
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
 
     // Render email
     // biome-ignore lint/complexity/noBannedTypes: JSX is valid in Next.js API routes
-    const emailHtml = render(
+    const emailHtml = await render(
       <NewsletterEmail
         packageUpdates={packageUpdates}
         unsubscribeLink={unsubscribeLink}
@@ -147,4 +147,3 @@ function buildNewsletterPlainText(
 
   return lines.join("\n");
 }
-
