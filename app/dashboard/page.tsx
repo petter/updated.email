@@ -12,6 +12,7 @@ import {
 import { getAuthenticatedEmail } from "@/lib/auth";
 import { LoginForm } from "./login-form";
 import { LogoutButton } from "./logout-button";
+import { UnsubscribeButton } from "./unsubscribe-button";
 
 // Dummy data for subscribed packages
 const subscribedPackages = [
@@ -178,6 +179,27 @@ export default async function Dashboard({
             </Link>
           </div>
         </header>
+
+        {/* Subscription Management Section */}
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-semibold text-neutral-900 dark:text-white">
+              Newsletter Subscription
+            </h2>
+          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Manage Newsletter</CardTitle>
+              <CardDescription>
+                You are currently subscribed to updated.email newsletters. You
+                can unsubscribe at any time.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <UnsubscribeButton />
+            </CardContent>
+          </Card>
+        </section>
 
         {/* Subscribed Packages Section */}
         <section className="space-y-4">
