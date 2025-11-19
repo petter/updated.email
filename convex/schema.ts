@@ -15,4 +15,15 @@ export default defineSchema({
     email: v.string(),
     expiresAt: v.optional(v.number()),
   }).index("by_token", ["token"]),
+  login_tokens: defineTable({
+    token: v.string(),
+    email: v.string(),
+    expiresAt: v.optional(v.number()),
+  }).index("by_token", ["token"]),
+  sessions: defineTable({
+    sessionId: v.string(),
+    email: v.string(),
+    createdAt: v.number(),
+    expiresAt: v.number(),
+  }).index("by_sessionId", ["sessionId"]),
 });
