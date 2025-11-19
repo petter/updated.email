@@ -6,6 +6,7 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Link from "next/link";
 
 // Dummy data for subscribed packages
@@ -95,10 +96,25 @@ function formatDateTime(dateString: string): string {
   });
 }
 
-export default function Dashboard() {
+export default async function Dashboard({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const { verified } = await searchParams;
+  const isVerified = verified === "true";
+
   return (
     <main className="min-h-screen bg-linear-to-b from-neutral-50 via-white to-neutral-100 px-6 py-16 dark:from-neutral-950 dark:via-black dark:to-neutral-950">
       <div className="mx-auto w-full max-w-6xl space-y-12">
+        {isVerified && (
+          <Alert className="border-green-200 bg-green-50 text-green-900 dark:border-green-900 dark:bg-green-950/30 dark:text-green-100">
+            <AlertTitle>Subscription Confirmed!</AlertTitle>
+            <AlertDescription>
+              Thank you for verifying your email address. You are now subscribed to updated.email.
+            </AlertDescription>
+          </Alert>
+        )}
         {/* Header */}
         <header className="flex items-center justify-between">
           <div>
