@@ -36,4 +36,11 @@ export default defineSchema({
     email: v.string(),
     expiresAt: v.optional(v.number()),
   }).index("by_token", ["token"]),
+  package_subscriptions: defineTable({
+    email: v.string(),
+    packageName: v.string(),
+    subscribedAt: v.number(),
+  })
+    .index("by_email", ["email"])
+    .index("by_email_and_package", ["email", "packageName"]),
 });
