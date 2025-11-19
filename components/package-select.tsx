@@ -2,7 +2,8 @@
 
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
+import { debounce } from "es-toolkit/function";
 
 interface NpmPackage {
   name: string;
@@ -11,6 +12,20 @@ interface NpmPackage {
   downloads: {
     lastMonth: number;
   };
+}
+
+interface NpmSearchResponse {
+  objects: Array<{
+    package: {
+      name: string;
+      version: string;
+      description?: string;
+    };
+    downloads?: {
+      monthly?: number;
+      weekly?: number;
+    };
+  }>;
 }
 
 interface PackageSelectProps {
@@ -27,23 +42,12 @@ export function PackageSelect({ onSelect, className }: PackageSelectProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Debounce search
-  useEffect(() => {
-    if (!query.trim()) {
+  const searchPackages = useCallback(async (searchQuery: string) => {
+    if (!searchQuery.trim()) {
       setPackages([]);
       setIsOpen(false);
       return;
     }
-
-    const timeoutId = setTimeout(() => {
-      searchPackages(query);
-    }, 300);
-
-    return () => clearTimeout(timeoutId);
-  }, [query]);
-
-  const searchPackages = async (searchQuery: string) => {
-    if (!searchQuery.trim()) return;
 
     setIsLoading(true);
     try {
@@ -52,23 +56,18 @@ export function PackageSelect({ onSelect, className }: PackageSelectProps) {
           searchQuery
         )}&size=20`
       );
-      const data = await response.json();
+      const data = (await response.json()) as NpmSearchResponse;
 
       // Sort by download count (descending) and map to our interface
       const sortedPackages: NpmPackage[] = data.objects
-        .map(
-          (obj: {
-            package: any;
-            downloads?: { monthly?: number; weekly?: number };
-          }) => ({
-            name: obj.package.name,
-            version: obj.package.version,
-            description: obj.package.description,
-            downloads: {
-              lastMonth: obj.downloads?.monthly || 0,
-            },
-          })
-        )
+        .map((obj) => ({
+          name: obj.package.name,
+          version: obj.package.version,
+          description: obj.package.description,
+          downloads: {
+            lastMonth: obj.downloads?.monthly || 0,
+          },
+        }))
         .sort(
           (a: NpmPackage, b: NpmPackage) =>
             b.downloads.lastMonth - a.downloads.lastMonth
@@ -83,7 +82,20 @@ export function PackageSelect({ onSelect, className }: PackageSelectProps) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  // Create debounced search function
+  const debouncedSearch = useMemo(
+    () => debounce(searchPackages, 300),
+    [searchPackages]
+  );
+
+  // Cleanup debounced function on unmount
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [debouncedSearch]);
 
   const handleSelect = (packageName: string) => {
     onSelect(packageName);
@@ -130,7 +142,10 @@ export function PackageSelect({ onSelect, className }: PackageSelectProps) {
         type="text"
         placeholder="Search npm packages (e.g. react)"
         value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        onChange={(e) => {
+          setQuery(e.target.value);
+          debouncedSearch(e.target.value);
+        }}
         onFocus={() => {
           if (packages.length > 0) {
             setIsOpen(true);
