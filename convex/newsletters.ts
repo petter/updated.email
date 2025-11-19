@@ -1,7 +1,7 @@
 import { v } from "convex/values";
 import { z } from "zod";
 import { api } from "./_generated/api";
-import { action } from "./_generated/server";
+import { action, mutation, query } from "./_generated/server";
 
 // Environment variables - set these in Convex dashboard
 // APP_URL should be your production URL (e.g., https://yourdomain.com)
@@ -62,7 +62,7 @@ function isPreRelease(version: string): boolean {
 }
 
 function getVersionType(
-  version: string
+  version: string,
 ): "major" | "minor" | "patch" | "unknown" {
   const match = version.match(/^(\d+)\.(\d+)\.(\d+)/);
   if (!match) return "unknown";
@@ -76,7 +76,7 @@ function getVersionType(
 }
 
 function parseRepositoryUrl(
-  url: string
+  url: string,
 ): { owner: string; repo: string } | null {
   try {
     let cleanUrl = url;
@@ -114,11 +114,11 @@ function extractTagVersion(tag: string): string | null {
 
 async function getPackageUpdates(
   packageName: string,
-  since: Date
+  since: Date,
 ): Promise<PackageUpdateResult> {
   try {
     const response = await fetch(
-      `https://registry.npmjs.org/${encodeURIComponent(packageName)}`
+      `https://registry.npmjs.org/${encodeURIComponent(packageName)}`,
     );
 
     if (!response.ok) {
@@ -193,7 +193,7 @@ async function getPackageUpdates(
 
 async function getChangelogs(
   repositoryUrl: string,
-  versions: PackageVersion[]
+  versions: PackageVersion[],
 ): Promise<Record<string, ChangelogEntry>> {
   const repoInfo = parseRepositoryUrl(repositoryUrl);
   if (!repoInfo) {
@@ -263,7 +263,7 @@ export const sendNewsletterToSubscriber = action({
   },
   handler: async (
     ctx,
-    args
+    args,
   ): Promise<
     { success: true; emailId?: string } | { success: false; error: string }
   > => {
@@ -275,7 +275,7 @@ export const sendNewsletterToSubscriber = action({
     for (const packageName of args.packageNames) {
       const updates = await getPackageUpdates(
         packageName,
-        new Date(args.since)
+        new Date(args.since),
       );
 
       // Fetch changelogs if we have versions
@@ -283,7 +283,7 @@ export const sendNewsletterToSubscriber = action({
       if (updates.versions.length > 0 && updates.repositoryUrl) {
         changelogs = await getChangelogs(
           updates.repositoryUrl,
-          updates.versions
+          updates.versions,
         );
       }
 
@@ -297,7 +297,7 @@ export const sendNewsletterToSubscriber = action({
     const unsubscribeTokenResult = (await ctx.runMutation(
       // biome-ignore lint/suspicious/noExplicitAny: Circular type reference requires type assertion
       api.subscriptions.generateUnsubscribeToken as any,
-      { email: args.email }
+      { email: args.email },
     )) as { success: boolean; token?: string; message?: string };
 
     const unsubscribeLink: string | undefined = unsubscribeTokenResult.success
@@ -324,19 +324,48 @@ export const sendNewsletterToSubscriber = action({
       }),
     });
 
+    // Calculate total update count
+    const updateCount = packageUpdates.reduce(
+      (sum, pkg) => sum + pkg.versions.length,
+      0,
+    );
+
     if (!response.ok) {
       const errorData = (await response.json()) as { error?: string };
+      const errorMessage = errorData.error || "Failed to send email";
       console.error(
         `Failed to send newsletter to ${args.email}:`,
-        errorData.error
+        errorMessage,
       );
+
+      // Record failed send
+      await ctx.runMutation(api.newsletters.recordNewsletterSend, {
+        email: args.email,
+        packageNames: args.packageNames,
+        packageCount: args.packageNames.length,
+        updateCount,
+        status: "error",
+        error: errorMessage,
+      });
+
       return {
         success: false,
-        error: errorData.error || "Failed to send email",
+        error: errorMessage,
       };
     }
 
     const result = (await response.json()) as { emailId?: string };
+
+    // Record successful send
+    await ctx.runMutation(api.newsletters.recordNewsletterSend, {
+      email: args.email,
+      packageNames: args.packageNames,
+      packageCount: args.packageNames.length,
+      updateCount,
+      status: "success",
+      emailId: result.emailId,
+    });
+
     return { success: true, emailId: result.emailId };
   },
 });
@@ -348,7 +377,7 @@ export const sendNewsletterToSubscriber = action({
 export const sendNewslettersToAllSubscribers = action({
   args: {},
   handler: async (
-    ctx
+    ctx,
   ): Promise<{
     success: boolean;
     sent: number;
@@ -358,7 +387,7 @@ export const sendNewslettersToAllSubscribers = action({
     // Get all active subscriptions
     const subscriptions = await ctx.runQuery(
       // biome-ignore lint/suspicious/noExplicitAny: Circular type reference requires type assertion
-      api.subscriptions.getAllActiveSubscriptions as any
+      api.subscriptions.getAllActiveSubscriptions as any,
     );
 
     const now = Date.now();
@@ -372,7 +401,7 @@ export const sendNewslettersToAllSubscribers = action({
       const packageSubscriptions = await ctx.runQuery(
         // biome-ignore lint/suspicious/noExplicitAny: Circular type reference requires type assertion
         api.subscriptions.getPackageSubscriptions as any,
-        { email: subscription.email }
+        { email: subscription.email },
       );
 
       if (packageSubscriptions.length === 0) {
@@ -387,7 +416,7 @@ export const sendNewslettersToAllSubscribers = action({
         oneWeekAgo;
 
       const packageNames = packageSubscriptions.map(
-        (pkg: { packageName: string }) => pkg.packageName
+        (pkg: { packageName: string }) => pkg.packageName,
       );
 
       try {
@@ -398,7 +427,7 @@ export const sendNewslettersToAllSubscribers = action({
             email: subscription.email,
             packageNames,
             since,
-          }
+          },
         )) as { success: boolean; emailId?: string; error?: string };
 
         if (result.success) {
@@ -409,21 +438,21 @@ export const sendNewslettersToAllSubscribers = action({
             {
               email: subscription.email,
               timestamp: now,
-            }
+            },
           );
           successCount++;
         } else {
           errorCount++;
           console.error(
             `Failed to send newsletter to ${subscription.email}:`,
-            result.error
+            result.error,
           );
         }
       } catch (error) {
         errorCount++;
         console.error(
           `Error sending newsletter to ${subscription.email}:`,
-          error
+          error,
         );
       }
     }
@@ -434,5 +463,83 @@ export const sendNewslettersToAllSubscribers = action({
       errors: errorCount,
       total: subscriptions.length,
     };
+  },
+});
+
+/**
+ * Records a newsletter send in the database.
+ */
+export const recordNewsletterSend = mutation({
+  args: {
+    email: v.string(),
+    packageNames: v.array(v.string()),
+    packageCount: v.number(),
+    updateCount: v.number(),
+    status: v.union(v.literal("success"), v.literal("error")),
+    emailId: v.optional(v.string()),
+    error: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.insert("newsletter_sends", {
+      email: args.email,
+      sentAt: Date.now(),
+      packageNames: args.packageNames,
+      packageCount: args.packageCount,
+      updateCount: args.updateCount,
+      status: args.status,
+      emailId: args.emailId,
+      error: args.error,
+    });
+  },
+});
+
+/**
+ * Gets all newsletter sends for a specific email address.
+ */
+export const getNewsletterSendsByEmail = query({
+  args: { email: v.string() },
+  handler: async (ctx, args) => {
+    const sends = await ctx.db
+      .query("newsletter_sends")
+      .withIndex("by_email", (q) => q.eq("email", args.email))
+      .collect();
+
+    // Sort by sentAt descending (most recent first)
+    return sends.sort((a, b) => b.sentAt - a.sentAt);
+  },
+});
+
+/**
+ * Gets all newsletter sends, optionally filtered by date range.
+ */
+export const getAllNewsletterSends = query({
+  args: {
+    limit: v.optional(v.number()),
+    startDate: v.optional(v.number()),
+    endDate: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    let sends = await ctx.db
+      .query("newsletter_sends")
+      .withIndex("by_sentAt")
+      .collect();
+
+    // Filter by date range if provided
+    if (args.startDate) {
+      sends = sends.filter((send) => send.sentAt >= args.startDate!);
+    }
+    if (args.endDate) {
+      sends = sends.filter((send) => send.sentAt <= args.endDate!);
+    }
+
+    // Sort by sentAt descending (most recent first)
+    sends.sort((a, b) => b.sentAt - a.sentAt);
+
+    // Apply limit if provided
+    if (args.limit) {
+      sends = sends.slice(0, args.limit);
+    }
+
+    return sends;
   },
 });

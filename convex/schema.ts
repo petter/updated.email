@@ -44,4 +44,16 @@ export default defineSchema({
   })
     .index("by_email", ["email"])
     .index("by_email_and_package", ["email", "packageName"]),
+  newsletter_sends: defineTable({
+    email: v.string(),
+    sentAt: v.number(),
+    packageNames: v.array(v.string()),
+    packageCount: v.number(),
+    updateCount: v.number(),
+    status: v.union(v.literal("success"), v.literal("error")),
+    emailId: v.optional(v.string()),
+    error: v.optional(v.string()),
+  })
+    .index("by_email", ["email"])
+    .index("by_sentAt", ["sentAt"]),
 });
