@@ -1,7 +1,11 @@
-export type PackageVersion = {
-  version: string;
-  publishedAt: string; // ISO string
-};
+import { z } from "zod";
+
+export const PackageVersionSchema = z.object({
+  version: z.string(),
+  publishedAt: z.coerce.date(),
+});
+
+export type PackageVersion = z.infer<typeof PackageVersionSchema>;
 
 export type PackageUpdateResult = {
   packageName: string;
@@ -65,6 +69,18 @@ function getVersionType(
   return "major"; // e.g. 1.0.0, 2.0.0
 }
 
+const NpmRegistryResponseSchema = z.object({
+  repository: z
+    .union([
+      z.string(),
+      z.object({
+        url: z.string(),
+      }),
+    ])
+    .optional(),
+  time: z.record(z.string(), z.string()).optional(),
+});
+
 /**
  * Fetches package versions published since a given date.
  *
@@ -103,7 +119,19 @@ export async function getPackageUpdates(
       };
     }
 
-    const data = await response.json();
+    const rawData = await response.json();
+    const parseResult = NpmRegistryResponseSchema.safeParse(rawData);
+
+    if (!parseResult.success) {
+      console.error("Zod parse error:", parseResult.error);
+      return {
+        packageName,
+        versions: [],
+        error: "Invalid response from NPM registry",
+      };
+    }
+
+    const data = parseResult.data;
 
     let repositoryUrl: string | undefined;
     if (data.repository) {
@@ -114,7 +142,7 @@ export async function getPackageUpdates(
       }
     }
 
-    const timeData = data.time as Record<string, string>;
+    const timeData = data.time;
 
     if (!timeData) {
       return { packageName, versions: [], repositoryUrl };
@@ -139,18 +167,19 @@ export async function getPackageUpdates(
 
       const publishedAt = new Date(time);
       if (publishedAt >= since) {
-        versions.push({
+        const parsedVersion = PackageVersionSchema.safeParse({
           version,
           publishedAt: time,
         });
+
+        if (parsedVersion.success) {
+          versions.push(parsedVersion.data);
+        }
       }
     }
 
     // Sort by date descending
-    versions.sort(
-      (a, b) =>
-        new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
-    );
+    versions.sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime());
 
     return { packageName, versions, repositoryUrl };
   } catch (error) {

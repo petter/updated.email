@@ -1,10 +1,12 @@
 import { ChangelogEntry } from "./types";
 import { PackageVersion } from "./npm";
 
-function parseRepositoryUrl(url: string): { owner: string; repo: string } | null {
+function parseRepositoryUrl(
+  url: string
+): { owner: string; repo: string } | null {
   try {
     let cleanUrl = url;
-    
+
     // Handle github shorthand
     if (url.startsWith("github:")) {
       const parts = url.substring(7).split("/");
@@ -15,10 +17,12 @@ function parseRepositoryUrl(url: string): { owner: string; repo: string } | null
 
     // Remove git+ or git:// prefixes
     if (cleanUrl.startsWith("git+")) cleanUrl = cleanUrl.substring(4);
-    if (cleanUrl.startsWith("git://")) cleanUrl = cleanUrl.replace("git://", "https://");
-    
+    if (cleanUrl.startsWith("git://"))
+      cleanUrl = cleanUrl.replace("git://", "https://");
+
     // Remove .git suffix
-    if (cleanUrl.endsWith(".git")) cleanUrl = cleanUrl.substring(0, cleanUrl.length - 4);
+    if (cleanUrl.endsWith(".git"))
+      cleanUrl = cleanUrl.substring(0, cleanUrl.length - 4);
 
     // Parse URL
     const urlObj = new URL(cleanUrl);
@@ -56,11 +60,13 @@ export async function getChangelogs(
 
   try {
     const response = await fetch(feedUrl, {
-        next: { revalidate: 3600 } // Cache for 1 hour
+      next: { revalidate: 3600 }, // Cache for 1 hour
     });
-    
+
     if (!response.ok) {
-      console.warn(`Failed to fetch releases feed for ${owner}/${repo}: ${response.statusText}`);
+      console.warn(
+        `Failed to fetch releases feed for ${owner}/${repo}: ${response.statusText}`
+      );
       return {};
     }
 
@@ -74,54 +80,54 @@ export async function getChangelogs(
 
     while ((match = entryRegex.exec(xmlText)) !== null) {
       const entryContent = match[1];
-      
+
       const titleMatch = entryContent.match(/<title>(.*?)<\/title>/);
       if (!titleMatch) continue;
-      
+
       const title = titleMatch[1];
       const version = extractTagVersion(title);
-      
+
       if (!version) continue;
 
       // Check if this version is in our requested list
       // We check if the extracted version matches any of the requested versions
-      const matchingVersion = versions.find(v => v.version === version);
-      
+      const matchingVersion = versions.find((v) => v.version === version);
+
       if (matchingVersion) {
-        const contentMatch = entryContent.match(/<content type="html">([\s\S]*?)<\/content>/);
+        const contentMatch = entryContent.match(
+          /<content type="html">([\s\S]*?)<\/content>/
+        );
         const linkMatch = entryContent.match(/<link.*?href="(.*?)".*?\/>/);
         const updatedMatch = entryContent.match(/<updated>(.*?)<\/updated>/);
-        
-        if (contentMatch) {
-            // Decode HTML entities in the content if necessary?
-            // The content in Atom is usually XML-escaped HTML.
-            // <content type="html">&lt;p&gt;...
-            // We need to unescape it once to get the HTML string.
-            let content = contentMatch[1];
-            
-            // Basic unescape
-            content = content
-                .replace(/&lt;/g, '<')
-                .replace(/&gt;/g, '>')
-                .replace(/&amp;/g, '&')
-                .replace(/&quot;/g, '"')
-                .replace(/&#39;/g, "'");
 
-            entries[version] = {
-                version,
-                content,
-                url: linkMatch ? linkMatch[1] : undefined,
-                publishedAt: updatedMatch ? updatedMatch[1] : undefined
-            };
+        if (contentMatch) {
+          // Decode HTML entities in the content if necessary?
+          // The content in Atom is usually XML-escaped HTML.
+          // <content type="html">&lt;p&gt;...
+          // We need to unescape it once to get the HTML string.
+          let content = contentMatch[1];
+
+          // Basic unescape
+          content = content
+            .replace(/&lt;/g, "<")
+            .replace(/&gt;/g, ">")
+            .replace(/&amp;/g, "&")
+            .replace(/&quot;/g, '"')
+            .replace(/&#39;/g, "'");
+
+          entries[version] = {
+            version,
+            content,
+            url: linkMatch ? linkMatch[1] : undefined,
+            publishedAt: updatedMatch ? updatedMatch[1] : undefined,
+          };
         }
       }
     }
 
     return entries;
-
   } catch (error) {
     console.error(`Error fetching changelogs for ${owner}/${repo}:`, error);
     return {};
   }
 }
-

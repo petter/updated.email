@@ -136,7 +136,7 @@ export default function PackageUpdatesPage() {
                             {v.version}
                           </span>
                           <span className="text-gray-500">
-                            {new Date(v.publishedAt).toLocaleString()}
+                            {v.publishedAt.toLocaleString()}
                           </span>
                         </div>
                         {result.changelogs?.[v.version] && (
