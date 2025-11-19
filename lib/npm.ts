@@ -7,6 +7,7 @@ export type PackageUpdateResult = {
   packageName: string;
   versions: PackageVersion[];
   error?: string;
+  repositoryUrl?: string;
 };
 
 /**
@@ -103,10 +104,20 @@ export async function getPackageUpdates(
     }
 
     const data = await response.json();
+
+    let repositoryUrl: string | undefined;
+    if (data.repository) {
+      if (typeof data.repository === "string") {
+        repositoryUrl = data.repository;
+      } else if (typeof data.repository === "object" && data.repository.url) {
+        repositoryUrl = data.repository.url;
+      }
+    }
+
     const timeData = data.time as Record<string, string>;
 
     if (!timeData) {
-      return { packageName, versions: [] };
+      return { packageName, versions: [], repositoryUrl };
     }
 
     const versions: PackageVersion[] = [];
@@ -141,7 +152,7 @@ export async function getPackageUpdates(
         new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
     );
 
-    return { packageName, versions };
+    return { packageName, versions, repositoryUrl };
   } catch (error) {
     return {
       packageName,

@@ -129,14 +129,41 @@ export default function PackageUpdatesPage() {
                     {result.versions.map((v) => (
                       <li
                         key={v.version}
-                        className="flex justify-between text-sm border-b pb-1 last:border-0"
+                        className="border-b last:border-0 pb-2"
                       >
-                        <span className="font-mono font-medium">
-                          {v.version}
-                        </span>
-                        <span className="text-gray-500">
-                          {new Date(v.publishedAt).toLocaleString()}
-                        </span>
+                        <div className="flex justify-between items-center text-sm mb-1">
+                          <span className="font-mono font-medium">
+                            {v.version}
+                          </span>
+                          <span className="text-gray-500">
+                            {new Date(v.publishedAt).toLocaleString()}
+                          </span>
+                        </div>
+                        {result.changelogs?.[v.version] && (
+                            <details className="group">
+                                <summary className="text-xs text-blue-600 cursor-pointer hover:underline focus:outline-none w-fit">
+                                    View Changelog
+                                </summary>
+                                <div 
+                                    className="mt-2 text-sm bg-gray-50 p-3 rounded overflow-auto max-h-96 space-y-2"
+                                >
+                                    <div dangerouslySetInnerHTML={{ __html: result.changelogs[v.version].content }} />
+                                    
+                                    {result.changelogs[v.version].url && (
+                                        <div className="mt-2 pt-2 border-t border-gray-200">
+                                            <a 
+                                                href={result.changelogs[v.version].url} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer" 
+                                                className="text-xs text-blue-500 hover:underline flex items-center"
+                                            >
+                                                View on GitHub &rarr;
+                                            </a>
+                                        </div>
+                                    )}
+                                </div>
+                            </details>
+                        )}
                       </li>
                     ))}
                   </ul>

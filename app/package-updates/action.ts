@@ -1,11 +1,17 @@
 "use server";
 
 import { getPackageUpdates, PackageUpdateResult } from "@/lib/npm";
+import { getChangelogs } from "@/lib/changelog";
 import { parseTimeRange } from "@/lib/utils";
+import { ChangelogEntry } from "@/lib/types";
+
+export type PackageUpdateWithChangelog = PackageUpdateResult & {
+  changelogs?: Record<string, ChangelogEntry>;
+};
 
 export type PackageUpdatesState = 
   | { status: 'idle' }
-  | { status: 'success', results: PackageUpdateResult[] }
+  | { status: 'success', results: PackageUpdateWithChangelog[] }
   | { status: 'error', error: string };
 
 export async function fetchPackageUpdatesAction(
@@ -49,7 +55,17 @@ export async function fetchPackageUpdatesAction(
             patch: includePatch
         }
     })));
-    return { status: 'success', results };
+
+    // Fetch changelogs for each result
+    const resultsWithChangelogs: PackageUpdateWithChangelog[] = await Promise.all(results.map(async (result) => {
+        if (result.repositoryUrl && result.versions.length > 0) {
+            const changelogs = await getChangelogs(result.repositoryUrl, result.versions);
+            return { ...result, changelogs };
+        }
+        return result;
+    }));
+
+    return { status: 'success', results: resultsWithChangelogs };
   } catch (error) {
       console.error("Failed to fetch package updates", error);
       return { status: 'error', error: "An unexpected error occurred." };
