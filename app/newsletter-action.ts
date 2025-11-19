@@ -2,12 +2,12 @@
 
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "@/convex/_generated/api";
-import { sendWaitlistConfirmationEmail } from "@/lib/newsletter";
+import { sendVerificationEmail } from "@/lib/newsletter";
 
 const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
 export type NewsletterActionResult =
-  | { success: true; isNew: boolean; email: string }
+  | { success: true; message: string; email: string }
   | { success: false; error: string };
 
 export async function submitNewsletterAction(
@@ -21,32 +21,35 @@ export async function submitNewsletterAction(
   }
 
   try {
-    // Add email to Convex waitlist
-    const result = await convex.mutation(api.waitlist.addToWaitlist, {
+    // Add email to Convex subscriptions (pending) and get token
+    const result = await convex.mutation(api.subscriptions.subscribe, {
       email,
     });
 
-    // Send confirmation email (even if they're already signed up, in case they didn't receive it before)
-    await sendWaitlistConfirmationEmail({ recipient: email });
-
-    if (result.isNew) {
-      return {
-        success: true,
-        isNew: true,
-        email,
-      };
-    } else {
-      return {
-        success: true,
-        isNew: false,
-        email,
-      };
+    if (!result.success) {
+        // If already subscribed or other error
+        return {
+            success: false,
+            error: result.message || "Something went wrong",
+        };
     }
+
+    if (result.token) {
+        // Send verification email
+        await sendVerificationEmail({ recipient: email, token: result.token });
+    }
+
+    return {
+        success: true,
+        message: "Check your email to confirm your subscription.",
+        email,
+    };
+
   } catch (error) {
-    console.error("waitlist signup failed", error);
+    console.error("newsletter signup failed", error);
     return {
       success: false,
-      error: "We couldn't add you to the waitlist. Please try again.",
+      error: "We couldn't sign you up. Please try again.",
     };
   }
 }

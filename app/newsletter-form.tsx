@@ -17,23 +17,12 @@ export function NewsletterForm() {
     <form
       action={formAction}
       className="space-y-6 rounded-3xl border border-neutral-200/80 bg-white/90 p-6 shadow-2xl shadow-neutral-900/5 backdrop-blur dark:border-neutral-800 dark:bg-neutral-900/60 md:p-10"
-      aria-label="Join the updated.email waitlist"
+      aria-label="Subscribe to updated.email"
     >
       {state?.success === true && (
         <Alert>
           <AlertDescription>
-            {state.isNew ? (
-              <>
-                Thanks! We&apos;ve added you to the waitlist and sent you a
-                confirmation email.
-              </>
-            ) : (
-              <>
-                We appreciate your eagerness! You&apos;re already signed up with{" "}
-                <strong>{state.email}</strong>. We&apos;ll notify you when
-                updated.email is ready.
-              </>
-            )}
+            {state.message}
           </AlertDescription>
         </Alert>
       )}
@@ -61,13 +50,12 @@ export function NewsletterForm() {
             disabled={isPending}
             className="w-full sm:w-auto"
           >
-            {isPending ? "Joining..." : "Join the waitlist"}
+            {isPending ? "Subscribing..." : "Subscribe"}
           </Button>
         </div>
       </div>
       <p className="text-sm text-neutral-500 dark:text-neutral-400">
-        We&apos;ll notify you when updated.email is ready. No spam, unsubscribe
-        anytime.
+        No spam, unsubscribe anytime.
       </p>
     </form>
   );
