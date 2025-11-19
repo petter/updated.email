@@ -55,7 +55,7 @@ function isPreRelease(version: string): boolean {
 }
 
 function getVersionType(
-  version: string
+  version: string,
 ): "major" | "minor" | "patch" | "unknown" {
   // Simple regex for semver
   const match = version.match(/^(\d+)\.(\d+)\.(\d+)/);
@@ -92,7 +92,7 @@ const NpmRegistryResponseSchema = z.object({
 export async function getPackageUpdates(
   packageName: string,
   since: Date,
-  options: GetPackageUpdatesOptions = {}
+  options: GetPackageUpdatesOptions = {},
 ): Promise<PackageUpdateResult> {
   const { includePreReleases = false, versions: versionOptions = {} } = options;
 
@@ -105,7 +105,7 @@ export async function getPackageUpdates(
       `https://registry.npmjs.org/${encodeURIComponent(packageName)}`,
       {
         next: { revalidate: 60 }, // Cache for 60 seconds
-      }
+      },
     );
 
     if (!response.ok) {

@@ -4,7 +4,12 @@ import { ConvexHttpClient } from "convex/browser";
 import { api } from "@/convex/_generated/api";
 import { sendVerificationEmail } from "@/lib/newsletter";
 
-const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
+const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
+if (!convexUrl) {
+  throw new Error("NEXT_PUBLIC_CONVEX_URL is not set");
+}
+
+const convex = new ConvexHttpClient(convexUrl);
 
 export type NewsletterActionResult =
   | { success: true; message: string; email: string }
@@ -12,7 +17,7 @@ export type NewsletterActionResult =
 
 export async function submitNewsletterAction(
   _prevState: NewsletterActionResult | null,
-  formData: FormData
+  formData: FormData,
 ): Promise<NewsletterActionResult> {
   const email = extractEmail(formData);
 
@@ -27,24 +32,23 @@ export async function submitNewsletterAction(
     });
 
     if (!result.success) {
-        // If already subscribed or other error
-        return {
-            success: false,
-            error: result.message || "Something went wrong",
-        };
+      // If already subscribed or other error
+      return {
+        success: false,
+        error: result.message || "Something went wrong",
+      };
     }
 
     if (result.token) {
-        // Send verification email
-        await sendVerificationEmail({ recipient: email, token: result.token });
+      // Send verification email
+      await sendVerificationEmail({ recipient: email, token: result.token });
     }
 
     return {
-        success: true,
-        message: "Check your email to confirm your subscription.",
-        email,
+      success: true,
+      message: "Check your email to confirm your subscription.",
+      email,
     };
-
   } catch (error) {
     console.error("newsletter signup failed", error);
     return {

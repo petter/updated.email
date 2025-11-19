@@ -4,9 +4,7 @@ type VerificationEmailProps = {
   validationLink: string;
 };
 
-export function VerificationEmail({
-  validationLink,
-}: VerificationEmailProps) {
+export function VerificationEmail({ validationLink }: VerificationEmailProps) {
   return (
     <div style={styles.body}>
       <table width="100%" cellPadding="0" cellSpacing="0" style={styles.card}>
@@ -16,15 +14,17 @@ export function VerificationEmail({
               <p style={styles.kicker}>updated.email</p>
               <h1 style={styles.title}>Confirm your subscription</h1>
               <p style={styles.paragraph}>
-                Thanks for signing up for updated.email! Please confirm your subscription by clicking the link below.
+                Thanks for signing up for updated.email! Please confirm your
+                subscription by clicking the link below.
               </p>
               <p style={styles.paragraph}>
-                  <a href={validationLink} style={styles.link}>
-                      Confirm Subscription
-                  </a>
+                <a href={validationLink} style={styles.link}>
+                  Confirm Subscription
+                </a>
               </p>
               <p style={styles.paragraph}>
-                If you didn't sign up for this, you can safely ignore this email.
+                If you didn't sign up for this, you can safely ignore this
+                email.
               </p>
               <p style={styles.signature}>— The updated.email team</p>
             </td>
@@ -77,4 +77,3 @@ const styles: Record<string, CSSProperties> = {
     marginTop: "24px",
   },
 };
-

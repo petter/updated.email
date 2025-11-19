@@ -1,5 +1,5 @@
-import { WaitlistConfirmationEmail } from "@/emails/waitlist-confirmation-email";
 import { VerificationEmail } from "@/emails/verification-email";
+import { WaitlistConfirmationEmail } from "@/emails/waitlist-confirmation-email";
 import { getFromAddress, getResendClient } from "@/lib/resend";
 
 type SendWaitlistConfirmationEmailInput = {

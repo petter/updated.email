@@ -1,16 +1,16 @@
 "use client";
 
 import { useActionState } from "react";
-import { submitNewsletterAction } from "./newsletter-action";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { submitNewsletterAction } from "./newsletter-action";
 
 export function NewsletterForm() {
   const [state, formAction, isPending] = useActionState(
     submitNewsletterAction,
-    null
+    null,
   );
 
   return (
@@ -21,9 +21,7 @@ export function NewsletterForm() {
     >
       {state?.success === true && (
         <Alert>
-          <AlertDescription>
-            {state.message}
-          </AlertDescription>
+          <AlertDescription>{state.message}</AlertDescription>
         </Alert>
       )}
 

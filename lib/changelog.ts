@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { ChangelogEntry } from "./types";
-import { PackageVersion } from "./npm";
+import type { PackageVersion } from "./npm";
+import type { ChangelogEntry } from "./types";
 
 const GitHubReleaseSchema = z.object({
   tag_name: z.string(),
@@ -13,7 +13,7 @@ const GitHubReleaseSchema = z.object({
 const GitHubReleasesResponseSchema = z.array(GitHubReleaseSchema);
 
 function parseRepositoryUrl(
-  url: string
+  url: string,
 ): { owner: string; repo: string } | null {
   try {
     let cleanUrl = url;
@@ -58,7 +58,7 @@ function extractTagVersion(tag: string): string | null {
 
 export async function getChangelogs(
   repositoryUrl: string,
-  versions: PackageVersion[]
+  versions: PackageVersion[],
 ): Promise<Record<string, ChangelogEntry>> {
   const repoInfo = parseRepositoryUrl(repositoryUrl);
   if (!repoInfo) {
@@ -88,7 +88,7 @@ export async function getChangelogs(
 
     if (!response.ok) {
       console.warn(
-        `Failed to fetch releases from GitHub API for ${owner}/${repo}: ${response.statusText}`
+        `Failed to fetch releases from GitHub API for ${owner}/${repo}: ${response.statusText}`,
       );
       return {};
     }
@@ -99,7 +99,7 @@ export async function getChangelogs(
     if (!parseResult.success) {
       console.error(
         `Failed to parse GitHub releases for ${owner}/${repo}:`,
-        parseResult.error
+        parseResult.error,
       );
       return {};
     }

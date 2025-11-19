@@ -1,8 +1,8 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 export function parseTimeRange(range: string): Date | null {
@@ -16,7 +16,7 @@ export function parseTimeRange(range: string): Date | null {
   // Use UTC to avoid timezone issues when comparing with registry dates
   // But actually, Date objects compare fine regardless of timezone as they are just timestamps.
   // The issue might be related to how "now" is calculated relative to the registry "modified" time.
-  
+
   if (unit === "d") {
     return new Date(now.getTime() - value * 24 * 60 * 60 * 1000);
   } else if (unit === "h") {

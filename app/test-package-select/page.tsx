@@ -1,14 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import { PackageSelect } from "@/components/package-select";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { useState } from "react";
 
 export default function TestPackageSelectPage() {
   const [selectedPackages, setSelectedPackages] = useState<string[]>([]);
@@ -77,6 +77,7 @@ export default function TestPackageSelectPage() {
                   >
                     {pkg}
                     <button
+                      type="button"
                       onClick={() => handleRemove(pkg)}
                       className="absolute right-1 top-1/2 -translate-y-1/2 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring"
                       aria-label={`Remove ${pkg}`}
@@ -92,6 +93,7 @@ export default function TestPackageSelectPage() {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       >
+                        <title>Remove {pkg}</title>
                         <path d="M18 6 6 18" />
                         <path d="m6 6 12 12" />
                       </svg>

@@ -1,12 +1,12 @@
 "use client";
 
 import { useActionState } from "react";
-import { fetchPackageUpdatesAction } from "./action";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { fetchPackageUpdatesAction } from "./action";
 export default function PackageUpdatesPage() {
   const [state, action, isPending] = useActionState(fetchPackageUpdatesAction, {
     status: "idle",
@@ -140,29 +140,32 @@ export default function PackageUpdatesPage() {
                           </span>
                         </div>
                         {result.changelogs?.[v.version] && (
-                            <details className="group">
-                                <summary className="text-xs text-blue-600 cursor-pointer hover:underline focus:outline-none w-fit">
-                                    View Changelog
-                                </summary>
-                                <div 
-                                    className="mt-2 text-sm bg-gray-50 p-3 rounded overflow-auto max-h-96 space-y-2"
-                                >
-                                    <div dangerouslySetInnerHTML={{ __html: result.changelogs[v.version].content }} />
-                                    
-                                    {result.changelogs[v.version].url && (
-                                        <div className="mt-2 pt-2 border-t border-gray-200">
-                                            <a 
-                                                href={result.changelogs[v.version].url} 
-                                                target="_blank" 
-                                                rel="noopener noreferrer" 
-                                                className="text-xs text-blue-500 hover:underline flex items-center"
-                                            >
-                                                View on GitHub &rarr;
-                                            </a>
-                                        </div>
-                                    )}
+                          <details className="group">
+                            <summary className="text-xs text-blue-600 cursor-pointer hover:underline focus:outline-none w-fit">
+                              View Changelog
+                            </summary>
+                            <div className="mt-2 text-sm bg-gray-50 p-3 rounded overflow-auto max-h-96 space-y-2">
+                              <div
+                                // biome-ignore lint/security/noDangerouslySetInnerHtml: Changelog content is from trusted source
+                                dangerouslySetInnerHTML={{
+                                  __html: result.changelogs[v.version].content,
+                                }}
+                              />
+
+                              {result.changelogs[v.version].url && (
+                                <div className="mt-2 pt-2 border-t border-gray-200">
+                                  <a
+                                    href={result.changelogs[v.version].url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-xs text-blue-500 hover:underline flex items-center"
+                                  >
+                                    View on GitHub &rarr;
+                                  </a>
                                 </div>
-                            </details>
+                              )}
+                            </div>
+                          </details>
                         )}
                       </li>
                     ))}

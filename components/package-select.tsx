@@ -1,9 +1,9 @@
 "use client";
 
+import { debounce } from "es-toolkit/function";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { useState, useRef, useEffect, useMemo, useCallback } from "react";
-import { debounce } from "es-toolkit/function";
 
 interface NpmPackage {
   name: string;
@@ -53,8 +53,8 @@ export function PackageSelect({ onSelect, className }: PackageSelectProps) {
     try {
       const response = await fetch(
         `https://registry.npmjs.org/-/v1/search?text=${encodeURIComponent(
-          searchQuery
-        )}&size=20`
+          searchQuery,
+        )}&size=20`,
       );
       const data = (await response.json()) as NpmSearchResponse;
 
@@ -70,7 +70,7 @@ export function PackageSelect({ onSelect, className }: PackageSelectProps) {
         }))
         .sort(
           (a: NpmPackage, b: NpmPackage) =>
-            b.downloads.lastMonth - a.downloads.lastMonth
+            b.downloads.lastMonth - a.downloads.lastMonth,
         );
 
       setPackages(sortedPackages);
@@ -87,7 +87,7 @@ export function PackageSelect({ onSelect, className }: PackageSelectProps) {
   // Create debounced search function
   const debouncedSearch = useMemo(
     () => debounce(searchPackages, 300),
-    [searchPackages]
+    [searchPackages],
   );
 
   // Cleanup debounced function on unmount
@@ -158,7 +158,7 @@ export function PackageSelect({ onSelect, className }: PackageSelectProps) {
             case "ArrowDown":
               e.preventDefault();
               setSelectedIndex((prev) =>
-                prev < packages.length - 1 ? prev + 1 : prev
+                prev < packages.length - 1 ? prev + 1 : prev,
               );
               break;
             case "ArrowUp":
@@ -200,7 +200,7 @@ export function PackageSelect({ onSelect, className }: PackageSelectProps) {
                   index === selectedIndex &&
                     "bg-neutral-100 dark:bg-neutral-800",
                   index === 0 && "rounded-t-md",
-                  index === packages.length - 1 && "rounded-b-md"
+                  index === packages.length - 1 && "rounded-b-md",
                 )}
               >
                 <div className="font-medium text-neutral-900 dark:text-neutral-100">
