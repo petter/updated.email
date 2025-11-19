@@ -1,5 +1,16 @@
+import { z } from "zod";
 import { ChangelogEntry } from "./types";
 import { PackageVersion } from "./npm";
+
+const GitHubReleaseSchema = z.object({
+  tag_name: z.string(),
+  body: z.string().nullable().optional(),
+  body_html: z.string().optional(),
+  html_url: z.string(),
+  published_at: z.string().nullable().optional(),
+});
+
+const GitHubReleasesResponseSchema = z.array(GitHubReleaseSchema);
 
 function parseRepositoryUrl(
   url: string
@@ -38,10 +49,10 @@ function parseRepositoryUrl(
   }
 }
 
-function extractTagVersion(title: string): string | null {
+function extractTagVersion(tag: string): string | null {
   // Common tag formats: v1.0.0, 1.0.0, ver1.0.0, release-1.0.0
   // We want to extract the semantic version part 1.0.0
-  const match = title.match(/v?(\d+\.\d+\.\d+(?:-[a-zA-Z0-9.]+)?)/);
+  const match = tag.match(/v?(\d+\.\d+\.\d+(?:-[a-zA-Z0-9.]+)?)/);
   return match ? match[1] : null;
 }
 
@@ -56,72 +67,67 @@ export async function getChangelogs(
   }
 
   const { owner, repo } = repoInfo;
-  const feedUrl = `https://github.com/${owner}/${repo}/releases.atom`;
+  // Use GitHub API instead of Atom feed
+  // Fetch up to 100 releases to get better history coverage
+  const apiUrl = `https://api.github.com/repos/${owner}/${repo}/releases?per_page=100`;
 
   try {
-    const response = await fetch(feedUrl, {
+    const headers: HeadersInit = {
+      // Request HTML content for the body
+      Accept: "application/vnd.github.html+json",
+    };
+
+    if (process.env.GITHUB_TOKEN) {
+      headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
+    }
+
+    const response = await fetch(apiUrl, {
+      headers,
       next: { revalidate: 3600 }, // Cache for 1 hour
     });
 
     if (!response.ok) {
       console.warn(
-        `Failed to fetch releases feed for ${owner}/${repo}: ${response.statusText}`
+        `Failed to fetch releases from GitHub API for ${owner}/${repo}: ${response.statusText}`
       );
       return {};
     }
 
-    const xmlText = await response.text();
+    const rawData = await response.json();
+    const parseResult = GitHubReleasesResponseSchema.safeParse(rawData);
+
+    if (!parseResult.success) {
+      console.error(
+        `Failed to parse GitHub releases for ${owner}/${repo}:`,
+        parseResult.error
+      );
+      return {};
+    }
+
+    const releases = parseResult.data;
     const entries: Record<string, ChangelogEntry> = {};
 
-    // Simple regex-based XML parsing for <entry>
-    // Note: This is fragile but avoids heavy XML parser dependencies
-    const entryRegex = /<entry>([\s\S]*?)<\/entry>/g;
-    let match;
-
-    while ((match = entryRegex.exec(xmlText)) !== null) {
-      const entryContent = match[1];
-
-      const titleMatch = entryContent.match(/<title>(.*?)<\/title>/);
-      if (!titleMatch) continue;
-
-      const title = titleMatch[1];
-      const version = extractTagVersion(title);
-
+    for (const release of releases) {
+      const version = extractTagVersion(release.tag_name);
       if (!version) continue;
 
       // Check if this version is in our requested list
-      // We check if the extracted version matches any of the requested versions
       const matchingVersion = versions.find((v) => v.version === version);
 
       if (matchingVersion) {
-        const contentMatch = entryContent.match(
-          /<content type="html">([\s\S]*?)<\/content>/
-        );
-        const linkMatch = entryContent.match(/<link.*?href="(.*?)".*?\/>/);
-        const updatedMatch = entryContent.match(/<updated>(.*?)<\/updated>/);
+        // Use body_html if available (from custom header), fallback to body (markdown)
+        // The Zod schema has body_html as optional because it depends on the Accept header
+        // But since we sent the header, it should be there in the raw response and thus in the data if we typed it right?
+        // Actually, GitHub returns body_html property when the media type is used.
+        // Let's check if we got it.
+        const content = release.body_html || release.body || "";
 
-        if (contentMatch) {
-          // Decode HTML entities in the content if necessary?
-          // The content in Atom is usually XML-escaped HTML.
-          // <content type="html">&lt;p&gt;...
-          // We need to unescape it once to get the HTML string.
-          let content = contentMatch[1];
-
-          // Basic unescape
-          content = content
-            .replace(/&lt;/g, "<")
-            .replace(/&gt;/g, ">")
-            .replace(/&amp;/g, "&")
-            .replace(/&quot;/g, '"')
-            .replace(/&#39;/g, "'");
-
-          entries[version] = {
-            version,
-            content,
-            url: linkMatch ? linkMatch[1] : undefined,
-            publishedAt: updatedMatch ? updatedMatch[1] : undefined,
-          };
-        }
+        entries[version] = {
+          version,
+          content, // This will be HTML due to the Accept header
+          url: release.html_url,
+          publishedAt: release.published_at || undefined,
+        };
       }
     }
 
