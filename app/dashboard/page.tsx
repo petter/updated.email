@@ -92,6 +92,9 @@ export default async function Dashboard({
           </div>
         </header>
 
+        {/* Subscribed Packages Section */}
+        <SubscribedPackages email={email} />
+
         {/* Subscription Management Section */}
         <section className="space-y-4">
           <div className="flex items-center justify-between">
@@ -112,9 +115,6 @@ export default async function Dashboard({
             </CardContent>
           </Card>
         </section>
-
-        {/* Subscribed Packages Section */}
-        <SubscribedPackages email={email} />
       </div>
     </main>
   );
