@@ -2,6 +2,7 @@ import { ConvexHttpClient } from "convex/browser";
 import { type NextRequest, NextResponse } from "next/server";
 import { api } from "@/convex/_generated/api";
 import { env } from "@/env";
+import { sendNewsletterToSubscriber } from "./send-newsletter-to-subscriber";
 
 const convex = new ConvexHttpClient(env.NEXT_PUBLIC_CONVEX_URL);
 
@@ -43,14 +44,74 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    // Call the Convex action to send newsletters
-    const result = await convex.action(
-      api.newsletters.sendNewslettersToAllSubscribers,
-      {},
+    // Get all active subscriptions
+    const subscriptions = await convex.query(
+      api.subscriptions.getAllActiveSubscriptions,
     );
 
+    const now = Date.now();
+    const oneWeekAgo = now - 7 * 24 * 60 * 60 * 1000;
+
+    let successCount = 0;
+    let errorCount = 0;
+
+    for (const subscription of subscriptions) {
+      // Get package subscriptions for this user
+      const packageSubscriptions = await convex.query(
+        api.subscriptions.getPackageSubscriptions,
+        { email: subscription.email },
+      );
+
+      if (packageSubscriptions.length === 0) {
+        // Skip users with no package subscriptions
+        continue;
+      }
+
+      // Determine the "since" date - use last newsletter sent date or subscription date
+      const since =
+        subscription.lastNewsletterSentAt ??
+        subscription.subscribedAt ??
+        oneWeekAgo;
+
+      const packageNames = packageSubscriptions.map(
+        (pkg: { packageName: string }) => pkg.packageName,
+      );
+
+      try {
+        const result = await sendNewsletterToSubscriber({
+          email: subscription.email,
+          packageNames,
+          since,
+        });
+
+        if (result.success) {
+          // Update last newsletter sent date
+          await convex.mutation(api.subscriptions.updateLastNewsletterSentAt, {
+            email: subscription.email,
+            timestamp: now,
+          });
+          successCount++;
+        } else {
+          errorCount++;
+          console.error(
+            `Failed to send newsletter to ${subscription.email}:`,
+            result.error,
+          );
+        }
+      } catch (error) {
+        errorCount++;
+        console.error(
+          `Error sending newsletter to ${subscription.email}:`,
+          error,
+        );
+      }
+    }
+
     return NextResponse.json({
-      ...result,
+      success: true,
+      sent: successCount,
+      errors: errorCount,
+      total: subscriptions.length,
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
