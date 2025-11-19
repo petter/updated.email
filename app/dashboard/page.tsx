@@ -11,40 +11,8 @@ import {
 import { getAuthenticatedEmail } from "@/lib/auth";
 import { LoginForm } from "./login-form";
 import { LogoutButton } from "./logout-button";
+import { SubscribedPackages } from "./subscribed-packages";
 import { UnsubscribeButton } from "./unsubscribe-button";
-
-// Dummy data for subscribed packages
-const subscribedPackages = [
-  {
-    name: "react",
-    version: "19.2.0",
-    description: "A JavaScript library for building user interfaces",
-    subscribedAt: "2024-01-15",
-    lastUpdate: "2024-01-20",
-  },
-  {
-    name: "next",
-    version: "16.0.3",
-    description: "The React Framework for Production",
-    subscribedAt: "2024-01-10",
-    lastUpdate: "2024-01-18",
-  },
-  {
-    name: "typescript",
-    version: "5.6.3",
-    description:
-      "TypeScript is a superset of JavaScript that compiles to clean JavaScript output",
-    subscribedAt: "2024-01-12",
-    lastUpdate: "2024-01-19",
-  },
-  {
-    name: "tailwindcss",
-    version: "4.0.0",
-    description: "A utility-first CSS framework",
-    subscribedAt: "2024-01-08",
-    lastUpdate: "2024-01-17",
-  },
-];
 
 // Dummy data for previous emails
 const previousEmails = [
@@ -79,15 +47,6 @@ const previousEmails = [
     preview: "Your weekly digest of updates across all subscribed packages...",
   },
 ];
-
-function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-}
 
 function formatDateTime(dateString: string): string {
   const date = new Date(dateString);
@@ -201,47 +160,7 @@ export default async function Dashboard({
         </section>
 
         {/* Subscribed Packages Section */}
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-semibold text-neutral-900 dark:text-white">
-              Subscribed Packages
-            </h2>
-            <Badge variant="outline">
-              {subscribedPackages.length} packages
-            </Badge>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {subscribedPackages.map((pkg) => (
-              <Card key={pkg.name}>
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="text-lg">{pkg.name}</CardTitle>
-                      <CardDescription className="mt-1">
-                        {pkg.description}
-                      </CardDescription>
-                    </div>
-                    <Badge variant="secondary" className="ml-2">
-                      v{pkg.version}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2 text-sm text-neutral-600 dark:text-neutral-400">
-                    <div>
-                      <span className="font-medium">Subscribed:</span>{" "}
-                      {formatDate(pkg.subscribedAt)}
-                    </div>
-                    <div>
-                      <span className="font-medium">Last update:</span>{" "}
-                      {formatDate(pkg.lastUpdate)}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </section>
+        <SubscribedPackages email={email} />
 
         {/* Previous Emails Section */}
         <section className="space-y-4">
