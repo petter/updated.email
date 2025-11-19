@@ -16,8 +16,12 @@ export const subscribe = mutation({
     }
 
     // Create or update subscription to pending
+    // If previously unsubscribed, allow resubscription
     if (existing) {
-      // If it's pending, we just want to resend the verification, so we generate a new token
+      // If it's pending or unsubscribed, update to pending and generate a new token
+      await ctx.db.patch(existing._id, {
+        status: "pending",
+      });
     } else {
       await ctx.db.insert("subscriptions", {
         email: args.email,
@@ -86,5 +90,115 @@ export const getSubscriptionStatus = query({
       .withIndex("by_email", (q) => q.eq("email", args.email))
       .first();
     return sub ? sub.status : null;
+  },
+});
+
+export const generateUnsubscribeToken = mutation({
+  args: {
+    email: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const subscription = await ctx.db
+      .query("subscriptions")
+      .withIndex("by_email", (q) => q.eq("email", args.email))
+      .first();
+
+    if (!subscription || subscription.status !== "subscribed") {
+      return { success: false, message: "No active subscription found" };
+    }
+
+    // Check if there's already a valid token for this email
+    // We'll reuse existing tokens to avoid creating many tokens per user
+    const existingTokens = await ctx.db.query("unsubscribe_tokens").collect();
+
+    const validToken = existingTokens.find(
+      (t) =>
+        t.email === args.email && (!t.expiresAt || t.expiresAt > Date.now()),
+    );
+
+    if (validToken) {
+      // Reuse existing valid token
+      return { success: true, token: validToken.token };
+    }
+
+    // Generate a new token
+    const token = crypto.randomUUID();
+
+    // Store the token without expiration - users should be able to unsubscribe anytime
+    // The token is tied to the email, so security is maintained
+    await ctx.db.insert("unsubscribe_tokens", {
+      token,
+      email: args.email,
+      // No expiration - users should be able to unsubscribe from old emails
+    });
+
+    return { success: true, token };
+  },
+});
+
+export const unsubscribe = mutation({
+  args: {
+    token: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const tokenRecord = await ctx.db
+      .query("unsubscribe_tokens")
+      .withIndex("by_token", (q) => q.eq("token", args.token))
+      .first();
+
+    if (!tokenRecord) {
+      return { success: false, message: "Invalid unsubscribe token" };
+    }
+
+    // Unsubscribe tokens don't expire - users should be able to unsubscribe anytime
+    // Even from old emails. The token is tied to the email address, providing security.
+
+    const subscription = await ctx.db
+      .query("subscriptions")
+      .withIndex("by_email", (q) => q.eq("email", tokenRecord.email))
+      .first();
+
+    if (!subscription) {
+      return { success: false, message: "Subscription not found" };
+    }
+
+    // Mark as unsubscribed
+    await ctx.db.patch(subscription._id, {
+      status: "unsubscribed",
+      unsubscribedAt: Date.now(),
+    });
+
+    // Clean up the used token
+    await ctx.db.delete(tokenRecord._id);
+
+    return { success: true, email: tokenRecord.email };
+  },
+});
+
+export const unsubscribeByEmail = mutation({
+  args: {
+    email: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const subscription = await ctx.db
+      .query("subscriptions")
+      .withIndex("by_email", (q) => q.eq("email", args.email))
+      .first();
+
+    if (!subscription) {
+      return { success: false, message: "Subscription not found" };
+    }
+
+    if (subscription.status === "unsubscribed") {
+      return { success: false, message: "Already unsubscribed" };
+    }
+
+    // Mark as unsubscribed
+    await ctx.db.patch(subscription._id, {
+      status: "unsubscribed",
+      unsubscribedAt: Date.now(),
+    });
+
+    return { success: true };
   },
 });
