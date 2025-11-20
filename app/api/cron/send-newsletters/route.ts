@@ -47,6 +47,7 @@ export async function POST(request: NextRequest) {
     // Get all active subscriptions
     const subscriptions = await convex.query(
       api.subscriptions.getAllActiveSubscriptions,
+      {},
     );
 
     const now = Date.now();

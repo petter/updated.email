@@ -1,3 +1,4 @@
+import { ConvexHttpClient } from "convex/browser";
 import Link from "next/link";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
@@ -7,11 +8,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { api } from "@/convex/_generated/api";
+import { env } from "@/env";
 import { getAuthenticatedEmail, getSessionId } from "@/lib/auth";
 import { LoginForm } from "./login-form";
 import { LogoutButton } from "./logout-button";
 import { SubscribedPackages } from "./subscribed-packages";
 import { UnsubscribeButton } from "./unsubscribe-button";
+
+const convex = new ConvexHttpClient(env.NEXT_PUBLIC_CONVEX_URL);
 
 export default async function Dashboard({
   searchParams,
@@ -24,6 +29,25 @@ export default async function Dashboard({
   const errorMessage = typeof error === "string" ? error : undefined;
   const email = await getAuthenticatedEmail();
   const sessionId = await getSessionId();
+
+  // Get unsubscribe token if user is authenticated
+  let unsubscribeToken: string | null = null;
+  if (email && sessionId) {
+    try {
+      const tokenResult = await convex.mutation(
+        api.subscriptions.generateUnsubscribeToken,
+        {
+          email,
+          sessionId,
+        },
+      );
+      if (tokenResult.success) {
+        unsubscribeToken = tokenResult.token ?? null;
+      }
+    } catch (error) {
+      console.error("Failed to generate unsubscribe token:", error);
+    }
+  }
 
   // If not authenticated, show login form
   if (!email) {
@@ -112,7 +136,7 @@ export default async function Dashboard({
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <UnsubscribeButton />
+              <UnsubscribeButton token={unsubscribeToken} />
             </CardContent>
           </Card>
         </section>
