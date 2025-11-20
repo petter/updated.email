@@ -56,9 +56,9 @@ export default function Home() {
               Stay up-to-date with the latest frontend news
             </h1>
             <p className="text-lg text-muted-foreground">
-              Subscribe to your favorite npm packages and receive weekly updates
-              on their latest releases. Stay current with the changing frontend
-              landscape without the noise.
+              Sign up to the newsletter that is tailored to your interests.
+              Select the npm packages you actually use and care about, and
+              receive weekly updates on their latest releases.
             </p>
           </div>
         </header>

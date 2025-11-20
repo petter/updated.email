@@ -53,7 +53,7 @@ export function NewsletterForm() {
         </div>
       </div>
       <p className="text-sm text-muted-foreground">
-        Weekly updates on your favorite packages. Unsubscribe anytime.
+        Completely free. Unsubscribe anytime.
       </p>
     </form>
   );
