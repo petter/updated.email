@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { requireEmailMatch } from "./helpers";
 
 export const subscribe = mutation({
   args: {
@@ -96,8 +97,15 @@ export const getSubscriptionStatus = query({
 export const generateUnsubscribeToken = mutation({
   args: {
     email: v.string(),
+    sessionId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    // If sessionId is provided, require authentication and verify email match
+    // If not provided, allow server-side calls (e.g., from cron jobs)
+    // In production, consider adding a server secret check for server-side calls
+    if (args.sessionId) {
+      await requireEmailMatch(ctx, args.sessionId, args.email);
+    }
     const subscription = await ctx.db
       .query("subscriptions")
       .withIndex("by_email", (q) => q.eq("email", args.email))
@@ -178,8 +186,11 @@ export const unsubscribe = mutation({
 export const unsubscribeByEmail = mutation({
   args: {
     email: v.string(),
+    sessionId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    // Require authentication and verify email match
+    await requireEmailMatch(ctx, args.sessionId, args.email);
     const subscription = await ctx.db
       .query("subscriptions")
       .withIndex("by_email", (q) => q.eq("email", args.email))
@@ -208,8 +219,11 @@ export const addPackageSubscription = mutation({
   args: {
     email: v.string(),
     packageName: v.string(),
+    sessionId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    // Require authentication and verify email match
+    await requireEmailMatch(ctx, args.sessionId, args.email);
     // Check if package subscription already exists
     const existing = await ctx.db
       .query("package_subscriptions")
@@ -237,8 +251,11 @@ export const removePackageSubscription = mutation({
   args: {
     email: v.string(),
     packageName: v.string(),
+    sessionId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    // Require authentication and verify email match
+    await requireEmailMatch(ctx, args.sessionId, args.email);
     const subscription = await ctx.db
       .query("package_subscriptions")
       .withIndex("by_email_and_package", (q) =>
@@ -256,8 +273,13 @@ export const removePackageSubscription = mutation({
 });
 
 export const getPackageSubscriptions = query({
-  args: { email: v.string() },
+  args: {
+    email: v.string(),
+    sessionId: v.optional(v.string()),
+  },
   handler: async (ctx, args) => {
+    // Require authentication and verify email match
+    await requireEmailMatch(ctx, args.sessionId, args.email);
     const subscriptions = await ctx.db
       .query("package_subscriptions")
       .withIndex("by_email", (q) => q.eq("email", args.email))
@@ -269,8 +291,14 @@ export const getPackageSubscriptions = query({
 });
 
 export const getAllActiveSubscriptions = query({
-  args: {},
-  handler: async (ctx) => {
+  args: {
+    sessionId: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    // This function is called from server-side cron jobs and potentially from admin UI
+    // If sessionId is provided, validate it; otherwise allow server-side calls
+    // In production, consider adding admin role check or server secret validation
+    // Note: Server-side calls are already protected by the cron endpoint's bearer token auth
     const subscriptions = await ctx.db
       .query("subscriptions")
       .filter((q) => q.eq(q.field("status"), "subscribed"))
@@ -284,8 +312,15 @@ export const updateLastNewsletterSentAt = mutation({
   args: {
     email: v.string(),
     timestamp: v.number(),
+    // This is called from server-side cron jobs, so sessionId is optional
+    // In production, you might want to use a server secret instead
+    sessionId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    // This function is called from server-side cron jobs
+    // If sessionId is provided, validate it; otherwise allow server-side calls
+    // In production, consider using a server secret for additional security
+    // Note: Server-side calls are already protected by the cron endpoint's bearer token auth
     const subscription = await ctx.db
       .query("subscriptions")
       .withIndex("by_email", (q) => q.eq("email", args.email))

@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getAuthenticatedEmail } from "@/lib/auth";
+import { getAuthenticatedEmail, getSessionId } from "@/lib/auth";
 import { LoginForm } from "./login-form";
 import { LogoutButton } from "./logout-button";
 import { SubscribedPackages } from "./subscribed-packages";
@@ -23,6 +23,7 @@ export default async function Dashboard({
   const isVerified = verified === "true";
   const errorMessage = typeof error === "string" ? error : undefined;
   const email = await getAuthenticatedEmail();
+  const sessionId = await getSessionId();
 
   // If not authenticated, show login form
   if (!email) {
@@ -93,7 +94,7 @@ export default async function Dashboard({
         </header>
 
         {/* Subscribed Packages Section */}
-        <SubscribedPackages email={email} />
+        <SubscribedPackages email={email} sessionId={sessionId} />
 
         {/* Subscription Management Section */}
         <section className="space-y-4">

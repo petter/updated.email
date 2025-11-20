@@ -3,7 +3,7 @@
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "@/convex/_generated/api";
 import { env } from "@/env";
-import { getAuthenticatedEmail } from "@/lib/auth";
+import { getAuthenticatedEmail, getSessionId } from "@/lib/auth";
 
 const convex = new ConvexHttpClient(env.NEXT_PUBLIC_CONVEX_URL);
 
@@ -13,6 +13,7 @@ export type UnsubscribeActionResult =
 
 export async function unsubscribeAction(): Promise<UnsubscribeActionResult> {
   const email = await getAuthenticatedEmail();
+  const sessionId = await getSessionId();
 
   if (!email) {
     return {
@@ -24,6 +25,7 @@ export async function unsubscribeAction(): Promise<UnsubscribeActionResult> {
   try {
     const result = await convex.mutation(api.subscriptions.unsubscribeByEmail, {
       email,
+      sessionId: sessionId ?? undefined,
     });
 
     if (!result.success) {

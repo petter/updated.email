@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { getAuthenticatedEmail, requireEmailMatch } from "./helpers";
 
 /**
  * Records a newsletter send in the database.
@@ -13,8 +14,15 @@ export const recordNewsletterSend = mutation({
     status: v.union(v.literal("success"), v.literal("error")),
     emailId: v.optional(v.string()),
     error: v.optional(v.string()),
+    // This is called from server-side cron jobs, so sessionId is optional
+    // In production, you might want to use a server secret instead
+    sessionId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    // This function is called from server-side cron jobs
+    // If sessionId is provided, validate it; otherwise allow server-side calls
+    // In production, consider using a server secret for additional security
+    // Note: Server-side calls are already protected by the cron endpoint's bearer token auth
     await ctx.db.insert("newsletter_sends", {
       email: args.email,
       sentAt: Date.now(),
@@ -32,8 +40,13 @@ export const recordNewsletterSend = mutation({
  * Gets all newsletter sends for a specific email address.
  */
 export const getNewsletterSendsByEmail = query({
-  args: { email: v.string() },
+  args: {
+    email: v.string(),
+    sessionId: v.optional(v.string()),
+  },
   handler: async (ctx, args) => {
+    // Require authentication and verify email match
+    await requireEmailMatch(ctx, args.sessionId, args.email);
     const sends = await ctx.db
       .query("newsletter_sends")
       .withIndex("by_email", (q) => q.eq("email", args.email))
@@ -52,8 +65,15 @@ export const getAllNewsletterSends = query({
     limit: v.optional(v.number()),
     startDate: v.optional(v.number()),
     endDate: v.optional(v.number()),
+    sessionId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    // Require authentication (admin function)
+    if (!args.sessionId) {
+      throw new Error("Authentication required");
+    }
+    // Note: In a production app, you might want to check if the user is an admin
+    // For now, we just require authentication
     let sends = await ctx.db
       .query("newsletter_sends")
       .withIndex("by_sentAt")

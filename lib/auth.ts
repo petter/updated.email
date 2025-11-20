@@ -43,3 +43,7 @@ export async function getAuthenticatedEmail(): Promise<string | null> {
     return null;
   }
 }
+
+export async function getSessionId(): Promise<string | null> {
+  return await getSessionFromCookie();
+}

@@ -15,9 +15,11 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/convex/_generated/api";
+import { getSessionIdFromCookie } from "@/lib/client-auth";
 
 interface SubscribedPackagesProps {
   email: string;
+  sessionId: string | null;
 }
 
 function formatDate(timestamp: number): string {
@@ -29,9 +31,16 @@ function formatDate(timestamp: number): string {
   });
 }
 
-export function SubscribedPackages({ email }: SubscribedPackagesProps) {
+export function SubscribedPackages({
+  email,
+  sessionId,
+}: SubscribedPackagesProps) {
+  // Fallback to reading from cookie if sessionId prop is not provided
+  const effectiveSessionId = sessionId ?? getSessionIdFromCookie();
+
   const packages = useQuery(api.subscriptions.getPackageSubscriptions, {
     email,
+    sessionId: effectiveSessionId ?? undefined,
   });
   const addPackage = useMutation(api.subscriptions.addPackageSubscription);
   const removePackage = useMutation(
@@ -45,6 +54,7 @@ export function SubscribedPackages({ email }: SubscribedPackagesProps) {
       const result = await addPackage({
         email,
         packageName,
+        sessionId: effectiveSessionId ?? undefined,
       });
       if (!result.success) {
         setError(result.message || "Failed to add package");
@@ -61,6 +71,7 @@ export function SubscribedPackages({ email }: SubscribedPackagesProps) {
       const result = await removePackage({
         email,
         packageName,
+        sessionId: effectiveSessionId ?? undefined,
       });
       if (!result.success) {
         setError(result.message || "Failed to remove package");
