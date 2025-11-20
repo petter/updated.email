@@ -20,18 +20,6 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Waitlist
-
-1. Copy `env.sample` to `.env.local` and add your credentials:
-   - `RESEND_API_KEY` &mdash; grab this from the Resend dashboard.
-   - `NEXT_PUBLIC_CONVEX_URL` &mdash; your Convex deployment URL.
-   - (Optional) `RESEND_FROM_EMAIL` &mdash; branded sender such as `updated.email <hello@example.com>`.
-2. Start the Convex dev server: `npx convex dev`
-3. Start the Next.js dev server: `bun dev` (or `npm run dev`).
-4. Submit the home page form to join the waitlist.
-
-The form saves emails to Convex, sends a confirmation email via Resend, and sets a cookie to remember returning visitors. For programmatic usage, import and call `sendWaitlistConfirmationEmail` from `@/lib/newsletter`.
-
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

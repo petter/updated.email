@@ -2,17 +2,12 @@ import { ConvexHttpClient } from "convex/browser";
 import { api } from "@/convex/_generated/api";
 import { LoginEmail } from "@/emails/login-email";
 import { VerificationEmail } from "@/emails/verification-email";
-import { WaitlistConfirmationEmail } from "@/emails/waitlist-confirmation-email";
 import { env } from "@/env";
 import { getFromAddress, getResendClient } from "@/lib/resend";
 
 const convex = new ConvexHttpClient(env.NEXT_PUBLIC_CONVEX_URL);
 
-type SendWaitlistConfirmationEmailInput = {
-  recipient: string;
-};
-
-type SendWaitlistConfirmationEmailResult = {
+type SendEmailResult = {
   id?: string;
 };
 
@@ -26,29 +21,10 @@ type SendLoginEmailInput = {
   token: string;
 };
 
-export async function sendWaitlistConfirmationEmail({
-  recipient,
-}: SendWaitlistConfirmationEmailInput): Promise<SendWaitlistConfirmationEmailResult> {
-  const resend = getResendClient();
-  const { data, error } = await resend.emails.send({
-    from: getFromAddress(),
-    to: recipient,
-    subject: "You're signed up for updated.email",
-    text: buildWaitlistPlainText(),
-    react: <WaitlistConfirmationEmail recipientEmail={recipient} />,
-  });
-
-  if (error) {
-    throw new Error(error.message);
-  }
-
-  return { id: data?.id };
-}
-
 export async function sendVerificationEmail({
   recipient,
   token,
-}: SendVerificationEmailInput): Promise<SendWaitlistConfirmationEmailResult> {
+}: SendVerificationEmailInput): Promise<SendEmailResult> {
   const resend = getResendClient();
   const link = `${env.NEXT_PUBLIC_APP_URL}/verify/${token}`;
 
@@ -70,7 +46,7 @@ export async function sendVerificationEmail({
 export async function sendLoginEmail({
   recipient,
   token,
-}: SendLoginEmailInput): Promise<SendWaitlistConfirmationEmailResult> {
+}: SendLoginEmailInput): Promise<SendEmailResult> {
   const resend = getResendClient();
   const link = `${env.NEXT_PUBLIC_APP_URL}/login/${token}`;
 
@@ -87,17 +63,6 @@ export async function sendLoginEmail({
   }
 
   return { id: data?.id };
-}
-
-function buildWaitlistPlainText(): string {
-  const lines = [
-    "Thanks for joining the updated.email waitlist!",
-    "We've added you to our list and we're working hard to bring you a curated weekly brief on new releases, breaking changes, and adoption signals for the packages you depend on.",
-    "We'll let you know as soon as updated.email is ready. Until then, stay tuned!",
-    "— The updated.email team",
-  ];
-
-  return lines.join("\n\n");
 }
 
 function buildVerificationPlainText(link: string): string {
