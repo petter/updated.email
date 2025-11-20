@@ -27,9 +27,9 @@ export function VerificationEmail({
       <Head />
       <Preview>Confirm your subscription to updated.email</Preview>
       <Tailwind>
-        <Body className="bg-[#f8f8f7] p-6 text-[#11181c] font-sans">
+        <Body className="bg-[#fef5f5] p-6 text-[#2d1a1a] font-sans">
           <Container className="max-w-[520px] mx-auto">
-            <Section className="bg-white rounded-[18px] p-8">
+            <Section className="bg-[#fffefe] rounded-[18px] p-8">
               <Img
                 src="https://updated.email/logo.svg"
                 alt="updated.email"
@@ -37,30 +37,30 @@ export function VerificationEmail({
                 height="40"
                 className="mb-4"
               />
-              <Text className="uppercase text-xs tracking-wider text-[#687076] m-0 mb-3">
+              <Text className="uppercase text-xs tracking-wider text-[#9d7a7a] m-0 mb-3">
                 updated.email
               </Text>
-              <Heading className="text-[28px] m-0 mb-4 leading-[1.3] text-[#11181c]">
+              <Heading className="text-[28px] m-0 mb-4 leading-[1.3] text-[#2d1a1a]">
                 Confirm your subscription
               </Heading>
-              <Text className="text-[15px] leading-[1.6] m-0 mb-4 text-[#11181c]">
+              <Text className="text-[15px] leading-[1.6] m-0 mb-4 text-[#2d1a1a]">
                 Thanks for signing up for updated.email! Please confirm your
                 subscription by clicking the link below.
               </Text>
-              <Text className="text-[15px] leading-[1.6] m-0 mb-4 text-[#11181c]">
+              <Text className="text-[15px] leading-[1.6] m-0 mb-4 text-[#2d1a1a]">
                 <Link
                   href={validationLink}
-                  className="text-[#0070f3] no-underline font-semibold"
+                  className="text-[#dc2626] no-underline font-semibold"
                 >
                   Confirm Subscription
                 </Link>
               </Text>
-              <Text className="text-[15px] leading-[1.6] m-0 mb-4 text-[#11181c]">
+              <Text className="text-[15px] leading-[1.6] m-0 mb-4 text-[#2d1a1a]">
                 If you didn't sign up for this, you can safely ignore this
                 email.
               </Text>
               <EmailFooter unsubscribeLink={unsubscribeLink} />
-              <Text className="font-semibold mt-6 m-0 text-[#11181c]">
+              <Text className="font-semibold mt-6 m-0 text-[#2d1a1a]">
                 — The updated.email team
               </Text>
             </Section>

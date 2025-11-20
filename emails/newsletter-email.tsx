@@ -40,9 +40,9 @@ export function NewsletterEmail({
       <Head />
       <Preview>Your Weekly Package Updates</Preview>
       <Tailwind>
-        <Body className="bg-[#f8f8f7] p-6 text-[#11181c] font-sans">
+        <Body className="bg-[#fef5f5] p-6 text-[#2d1a1a] font-sans">
           <Container className="max-w-[600px] mx-auto">
-            <Section className="bg-white rounded-[18px] p-8">
+            <Section className="bg-[#fffefe] rounded-[18px] p-8">
               <Img
                 src="https://updated.email/logo.svg"
                 alt="updated.email"
@@ -50,20 +50,20 @@ export function NewsletterEmail({
                 height="40"
                 className="mb-4"
               />
-              <Text className="uppercase text-xs tracking-wider text-[#687076] m-0 mb-3">
+              <Text className="uppercase text-xs tracking-wider text-[#9d7a7a] m-0 mb-3">
                 updated.email
               </Text>
-              <Heading className="text-[28px] m-0 mb-4 leading-[1.3] text-[#11181c]">
+              <Heading className="text-[28px] m-0 mb-4 leading-[1.3] text-[#2d1a1a]">
                 Your Weekly Package Updates
               </Heading>
               {!hasUpdates ? (
-                <Text className="text-[15px] leading-[1.6] m-0 mb-6 text-[#11181c]">
+                <Text className="text-[15px] leading-[1.6] m-0 mb-6 text-[#2d1a1a]">
                   No new updates this week for the packages you're subscribed
                   to. Check back next week!
                 </Text>
               ) : (
                 <>
-                  <Text className="text-[15px] leading-[1.6] m-0 mb-6 text-[#11181c]">
+                  <Text className="text-[15px] leading-[1.6] m-0 mb-6 text-[#2d1a1a]">
                     Here are the latest updates for the packages you're
                     following:
                   </Text>
@@ -75,11 +75,11 @@ export function NewsletterEmail({
                     return (
                       <Section
                         key={pkg.packageName}
-                        className="mb-8 pb-6 border-b border-neutral-200"
+                        className="mb-8 pb-6 border-b border-[#f5d5d5]"
                       >
                         <Heading
                           as="h2"
-                          className="text-xl font-semibold m-0 mb-4 text-[#11181c]"
+                          className="text-xl font-semibold m-0 mb-4 text-[#2d1a1a]"
                         >
                           {pkg.packageName}
                         </Heading>
@@ -88,16 +88,16 @@ export function NewsletterEmail({
                           return (
                             <Section
                               key={version.version}
-                              className="mb-5 pl-4 border-l-[3px] border-[#0070f3]"
+                              className="mb-5 pl-4 border-l-[3px] border-[#dc2626]"
                             >
                               <Row>
                                 <Column className="w-auto align-middle pr-3">
-                                  <Text className="text-sm font-semibold text-[#0070f3] bg-[#e6f2ff] px-[10px] py-1 rounded-md m-0 inline-block">
+                                  <Text className="text-sm font-semibold text-[#dc2626] bg-[#fee2e2] px-[10px] py-1 rounded-md m-0 inline-block">
                                     {version.version}
                                   </Text>
                                 </Column>
                                 <Column className="w-auto align-middle">
-                                  <Text className="text-[13px] text-[#687076] m-0">
+                                  <Text className="text-[13px] text-[#9d7a7a] m-0">
                                     {new Date(
                                       version.publishedAt,
                                     ).toLocaleDateString("en-US", {
@@ -110,14 +110,14 @@ export function NewsletterEmail({
                               </Row>
                               {changelog ? (
                                 <div
-                                  className="text-sm leading-[1.6] text-[#11181c] mb-2"
+                                  className="text-sm leading-[1.6] text-[#2d1a1a] mb-2"
                                   // biome-ignore lint/security/noDangerouslySetInnerHtml: Changelog content is HTML from GitHub releases API
                                   dangerouslySetInnerHTML={{
                                     __html: changelog.content,
                                   }}
                                 />
                               ) : (
-                                <Text className="text-sm text-[#687076] italic mb-2 m-0">
+                                <Text className="text-sm text-[#9d7a7a] italic mb-2 m-0">
                                   No changelog available for this version.
                                 </Text>
                               )}
@@ -125,7 +125,7 @@ export function NewsletterEmail({
                                 <Text className="mt-2 m-0">
                                   <Link
                                     href={changelog.url}
-                                    className="text-sm text-[#0070f3] no-underline font-medium"
+                                    className="text-sm text-[#dc2626] no-underline font-medium"
                                   >
                                     View release →
                                   </Link>
@@ -143,14 +143,14 @@ export function NewsletterEmail({
                 <Section className="mt-8 mb-6 text-center">
                   <Button
                     href={dashboardLink}
-                    className="bg-[#0070f3] text-white text-[15px] font-semibold px-6 py-3 rounded-lg no-underline leading-normal inline-block"
+                    className="bg-[#dc2626] text-white text-[15px] font-semibold px-6 py-3 rounded-lg no-underline leading-normal inline-block"
                   >
                     Go to dashboard
                   </Button>
                 </Section>
               )}
               <EmailFooter unsubscribeLink={unsubscribeLink} />
-              <Text className="font-semibold mt-6 m-0 text-[#11181c]">
+              <Text className="font-semibold mt-6 m-0 text-[#2d1a1a]">
                 — The updated.email team
               </Text>
             </Section>
