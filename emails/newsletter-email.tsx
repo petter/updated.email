@@ -6,7 +6,6 @@ import {
   Head,
   Heading,
   Html,
-  Img,
   Link,
   Preview,
   Row,
@@ -17,6 +16,7 @@ import {
 import type { PackageUpdateResult } from "../lib/npm";
 import type { ChangelogEntry } from "../lib/types";
 import { EmailFooter } from "./email-footer";
+import { EmailHeader } from "./email-header";
 
 type NewsletterEmailProps = {
   packageUpdates: Array<
@@ -43,19 +43,7 @@ export function NewsletterEmail({
         <Body className="bg-[#fef5f5] p-6 text-[#2d1a1a] font-sans">
           <Container className="max-w-[600px] mx-auto">
             <Section className="bg-[#fffefe] rounded-[18px] p-8">
-              <Img
-                src="https://updated.email/logo.svg"
-                alt="updated.email"
-                width="40"
-                height="40"
-                className="mb-4"
-              />
-              <Text className="uppercase text-xs tracking-wider text-[#9d7a7a] m-0 mb-3">
-                updated.email
-              </Text>
-              <Heading className="text-[28px] m-0 mb-4 leading-[1.3] text-[#2d1a1a]">
-                Your Weekly Package Updates
-              </Heading>
+              <EmailHeader heading="Your Weekly Package Updates" />
               {!hasUpdates ? (
                 <Text className="text-[15px] leading-[1.6] m-0 mb-6 text-[#2d1a1a]">
                   No new updates this week for the packages you're subscribed
