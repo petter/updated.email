@@ -87,7 +87,7 @@ export function SubscribedPackages({
     return (
       <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold text-neutral-900 dark:text-white">
+          <h2 className="text-2xl font-semibold text-foreground">
             Subscribed Packages
           </h2>
           <Skeleton className="h-6 w-20" />
@@ -127,7 +127,7 @@ export function SubscribedPackages({
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold text-neutral-900 dark:text-white">
+        <h2 className="text-2xl font-semibold text-foreground">
           Subscribed Packages
         </h2>
         <Badge variant="outline">{packages.length} packages</Badge>
@@ -156,7 +156,7 @@ export function SubscribedPackages({
       {packages.length === 0 ? (
         <Card>
           <CardContent className="pt-6">
-            <p className="text-center text-neutral-600 dark:text-neutral-400">
+            <p className="text-center text-muted-foreground">
               No packages subscribed yet. Use the search above to add packages.
             </p>
           </CardContent>
@@ -174,7 +174,7 @@ export function SubscribedPackages({
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="text-sm text-neutral-600 dark:text-neutral-400">
+                  <div className="text-sm text-muted-foreground">
                     <span className="font-medium">Subscribed:</span>{" "}
                     {formatDate(pkg.subscribedAt)}
                   </div>

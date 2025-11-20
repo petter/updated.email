@@ -27,7 +27,7 @@ const highlights = [
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-linear-to-b from-neutral-50 via-white to-neutral-100 px-6 py-16 dark:from-neutral-950 dark:via-black dark:to-neutral-950">
+    <main className="min-h-screen bg-background px-6 py-16">
       {/* Top navigation */}
       <div className="mx-auto mb-12 flex w-full max-w-3xl items-center justify-end">
         <Link href="/dashboard">
@@ -47,15 +47,15 @@ export default function Home() {
               height={40}
               className="h-10 w-auto mx-auto mb-3"
             />
-            <span className="uppercase tracking-wide text-neutral-600 dark:text-neutral-400 font-medium text-lg block">
+            <span className="uppercase tracking-wide text-muted-foreground font-medium text-lg block">
               updated.email
             </span>
           </div>
           <div className="space-y-4">
-            <h1 className="text-4xl font-semibold leading-tight text-neutral-900 dark:text-white sm:text-5xl">
+            <h1 className="text-4xl font-semibold leading-tight text-foreground sm:text-5xl">
               Become a better frontend developer
             </h1>
-            <p className="text-lg text-neutral-600 dark:text-neutral-300">
+            <p className="text-lg text-muted-foreground">
               Subscribe to your favorite npm packages and receive weekly updates
               on their latest releases. Stay current with the changing frontend
               landscape without the noise.

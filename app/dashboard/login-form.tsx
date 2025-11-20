@@ -16,7 +16,7 @@ export function LoginForm() {
   return (
     <form
       action={formAction}
-      className="space-y-6 rounded-3xl border border-neutral-200/80 bg-white/90 p-6 shadow-2xl shadow-neutral-900/5 backdrop-blur dark:border-neutral-800 dark:bg-neutral-900/60 md:p-10"
+      className="space-y-6 rounded-3xl border border-border bg-card/90 p-6 shadow-2xl shadow-foreground/5 backdrop-blur md:p-10"
       aria-label="Sign in to updated.email"
     >
       {state?.success === true && (
@@ -52,7 +52,7 @@ export function LoginForm() {
           </Button>
         </div>
       </div>
-      <p className="text-sm text-neutral-500 dark:text-neutral-400">
+      <p className="text-sm text-muted-foreground">
         We'll send you a magic link to sign in. No password required.
       </p>
     </form>

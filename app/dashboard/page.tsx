@@ -53,7 +53,7 @@ export default async function Dashboard({
   // If not authenticated, show login form
   if (!email) {
     return (
-      <main className="min-h-screen bg-linear-to-b from-neutral-50 via-white to-neutral-100 px-6 py-16 dark:from-neutral-950 dark:via-black dark:to-neutral-950">
+      <main className="min-h-screen bg-background px-6 py-16">
         <div className="mx-auto w-full max-w-2xl space-y-8">
           <header className="text-center">
             <Link
@@ -67,11 +67,11 @@ export default async function Dashboard({
                 height={40}
                 className="h-10 w-auto"
               />
-              <span className="uppercase tracking-wide text-neutral-600 dark:text-neutral-400 font-medium text-lg">
+              <span className="uppercase tracking-wide text-muted-foreground font-medium text-lg">
                 updated.email
               </span>
             </Link>
-            <p className="text-lg text-neutral-600 dark:text-neutral-300">
+            <p className="text-lg text-muted-foreground">
               Sign in to manage your package subscriptions
             </p>
           </header>
@@ -84,7 +84,7 @@ export default async function Dashboard({
           <div className="text-center">
             <Link
               href="/"
-              className="text-sm text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
+              className="text-sm text-muted-foreground hover:text-foreground"
             >
               ← Back to home
             </Link>
@@ -95,7 +95,7 @@ export default async function Dashboard({
   }
 
   return (
-    <main className="min-h-screen bg-linear-to-b from-neutral-50 via-white to-neutral-100 px-6 py-16 dark:from-neutral-950 dark:via-black dark:to-neutral-950">
+    <main className="min-h-screen bg-background px-6 py-16">
       <div className="mx-auto w-full max-w-6xl space-y-12">
         {isVerified && (
           <Alert className="border-green-200 bg-green-50 text-green-900 dark:border-green-900 dark:bg-green-950/30 dark:text-green-100">
@@ -117,14 +117,14 @@ export default async function Dashboard({
                 height={32}
                 className="h-8 w-auto"
               />
-              <span className="uppercase tracking-wide text-neutral-600 dark:text-neutral-400 font-medium">
+              <span className="uppercase tracking-wide text-muted-foreground font-medium">
                 updated.email
               </span>
             </Link>
-            <p className="text-lg text-neutral-600 dark:text-neutral-300">
+            <p className="text-lg text-muted-foreground">
               Manage your subscription
             </p>
-            <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
+            <p className="mt-1 text-sm text-muted-foreground">
               Signed in as {email}
             </p>
           </div>
@@ -132,7 +132,7 @@ export default async function Dashboard({
             <LogoutButton />
             <Link
               href="/"
-              className="text-sm text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
+              className="text-sm text-muted-foreground hover:text-foreground"
             >
               ← Back to home
             </Link>
@@ -147,7 +147,7 @@ export default async function Dashboard({
         {/* Subscription Management Section */}
         <section className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-semibold text-neutral-900 dark:text-white">
+            <h2 className="text-2xl font-semibold text-foreground">
               Newsletter Subscription
             </h2>
           </div>

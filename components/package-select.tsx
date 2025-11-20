@@ -182,10 +182,10 @@ export function PackageSelect({ onSelect, className }: PackageSelectProps) {
       {isOpen && (packages.length > 0 || isLoading) && (
         <div
           ref={dropdownRef}
-          className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md border bg-white shadow-lg dark:bg-neutral-900 dark:border-neutral-800"
+          className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md border bg-popover shadow-lg"
         >
           {isLoading ? (
-            <div className="px-3 py-2 text-sm text-neutral-500 dark:text-neutral-400">
+            <div className="px-3 py-2 text-sm text-muted-foreground">
               Searching...
             </div>
           ) : (
@@ -196,22 +196,21 @@ export function PackageSelect({ onSelect, className }: PackageSelectProps) {
                 onClick={() => handleSelect(pkg.name)}
                 className={cn(
                   "w-full px-3 py-2 text-left text-sm transition-colors",
-                  "hover:bg-neutral-100 dark:hover:bg-neutral-800",
-                  index === selectedIndex &&
-                    "bg-neutral-100 dark:bg-neutral-800",
+                  "hover:bg-accent",
+                  index === selectedIndex && "bg-accent",
                   index === 0 && "rounded-t-md",
                   index === packages.length - 1 && "rounded-b-md",
                 )}
               >
-                <div className="font-medium text-neutral-900 dark:text-neutral-100">
+                <div className="font-medium text-popover-foreground">
                   {pkg.name}
                 </div>
                 {pkg.description && (
-                  <div className="text-xs text-neutral-500 dark:text-neutral-400 line-clamp-1">
+                  <div className="text-xs text-muted-foreground line-clamp-1">
                     {pkg.description}
                   </div>
                 )}
-                <div className="mt-0.5 text-xs text-neutral-400 dark:text-neutral-500">
+                <div className="mt-0.5 text-xs text-muted-foreground">
                   {pkg.downloads.lastMonth.toLocaleString()} downloads/month
                 </div>
               </button>

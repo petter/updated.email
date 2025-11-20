@@ -29,7 +29,7 @@ export default async function UnsubscribedPage(
         <div className="text-center">
           <Link
             href="/"
-            className="text-sm text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
+            className="text-sm text-muted-foreground hover:text-foreground"
           >
             ← Back to home
           </Link>
