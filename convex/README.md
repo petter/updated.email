@@ -88,3 +88,13 @@ function handleButtonPress() {
 Use the Convex CLI to push your functions to a deployment. See everything
 the Convex CLI can do by running `npx convex -h` in your project root
 directory. To learn more, launch the docs with `npx convex docs`.
+
+## Environment Variables
+
+For server-side authentication in cron jobs, set the `CRON_SECRET` environment variable in Convex:
+
+```bash
+npx convex env set CRON_SECRET <your-secret-value>
+```
+
+This should match the `CRON_SECRET` value in your Next.js environment variables. In development, if `CRON_SECRET` is not set in Convex, the functions will still work (for local testing), but in production it should always be set.

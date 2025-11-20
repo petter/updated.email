@@ -45,9 +45,10 @@ export async function POST(request: NextRequest) {
 
   try {
     // Get all active subscriptions
+    // Pass cronSecret for server-side authentication
     const subscriptions = await convex.query(
       api.subscriptions.getAllActiveSubscriptions,
-      {},
+      { cronSecret: env.CRON_SECRET },
     );
 
     const now = Date.now();
@@ -58,9 +59,13 @@ export async function POST(request: NextRequest) {
 
     for (const subscription of subscriptions) {
       // Get package subscriptions for this user
+      // Pass cronSecret for server-side authentication
       const packageSubscriptions = await convex.query(
         api.subscriptions.getPackageSubscriptions,
-        { email: subscription.email },
+        {
+          email: subscription.email,
+          cronSecret: env.CRON_SECRET,
+        },
       );
 
       if (packageSubscriptions.length === 0) {
@@ -87,9 +92,11 @@ export async function POST(request: NextRequest) {
 
         if (result.success) {
           // Update last newsletter sent date
+          // Pass cronSecret for server-side authentication
           await convex.mutation(api.subscriptions.updateLastNewsletterSentAt, {
             email: subscription.email,
             timestamp: now,
+            cronSecret: env.CRON_SECRET,
           });
           successCount++;
         } else {

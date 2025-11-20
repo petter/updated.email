@@ -12,7 +12,6 @@ import type * as auth from "../auth.js";
 import type * as helpers from "../helpers.js";
 import type * as newsletters from "../newsletters.js";
 import type * as subscriptions from "../subscriptions.js";
-import type * as waitlist from "../waitlist.js";
 
 import type {
   ApiFromModules,
@@ -25,7 +24,6 @@ declare const fullApi: ApiFromModules<{
   helpers: typeof helpers;
   newsletters: typeof newsletters;
   subscriptions: typeof subscriptions;
-  waitlist: typeof waitlist;
 }>;
 
 /**

@@ -1,6 +1,10 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { requireEmailMatch } from "./helpers";
+import {
+  getAuthenticatedEmail,
+  requireEmailMatch,
+  validateCronSecret,
+} from "./helpers";
 
 export const subscribe = mutation({
   args: {
@@ -276,10 +280,23 @@ export const getPackageSubscriptions = query({
   args: {
     email: v.string(),
     sessionId: v.optional(v.string()),
+    cronSecret: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    // Require authentication and verify email match
-    await requireEmailMatch(ctx, args.sessionId, args.email);
+    // Require either user authentication (sessionId) or server authentication (cronSecret)
+    if (args.sessionId) {
+      // User authentication: verify session and email match
+      await requireEmailMatch(ctx, args.sessionId, args.email);
+    } else if (args.cronSecret) {
+      // Server authentication: verify cron secret
+      validateCronSecret(args.cronSecret);
+    } else {
+      // No authentication provided
+      throw new Error(
+        "Authentication required: provide either sessionId or cronSecret",
+      );
+    }
+
     const subscriptions = await ctx.db
       .query("package_subscriptions")
       .withIndex("by_email", (q) => q.eq("email", args.email))
@@ -293,12 +310,25 @@ export const getPackageSubscriptions = query({
 export const getAllActiveSubscriptions = query({
   args: {
     sessionId: v.optional(v.string()),
+    cronSecret: v.optional(v.string()),
   },
-  handler: async (ctx) => {
+  handler: async (ctx, args) => {
+    // Require either user authentication (sessionId) or server authentication (cronSecret)
     // This function is called from server-side cron jobs and potentially from admin UI
-    // If sessionId is provided, validate it; otherwise allow server-side calls
-    // In production, consider adding admin role check or server secret validation
-    // Note: Server-side calls are already protected by the cron endpoint's bearer token auth
+    if (args.sessionId) {
+      // User authentication: verify session (no email check needed for admin queries)
+      // Note: In production, you might want to add admin role check here
+      await getAuthenticatedEmail(ctx, args.sessionId);
+    } else if (args.cronSecret) {
+      // Server authentication: verify cron secret
+      validateCronSecret(args.cronSecret);
+    } else {
+      // No authentication provided
+      throw new Error(
+        "Authentication required: provide either sessionId or cronSecret",
+      );
+    }
+
     const subscriptions = await ctx.db
       .query("subscriptions")
       .filter((q) => q.eq(q.field("status"), "subscribed"))
@@ -312,15 +342,25 @@ export const updateLastNewsletterSentAt = mutation({
   args: {
     email: v.string(),
     timestamp: v.number(),
-    // This is called from server-side cron jobs, so sessionId is optional
-    // In production, you might want to use a server secret instead
     sessionId: v.optional(v.string()),
+    cronSecret: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    // Require either user authentication (sessionId) or server authentication (cronSecret)
     // This function is called from server-side cron jobs
-    // If sessionId is provided, validate it; otherwise allow server-side calls
-    // In production, consider using a server secret for additional security
-    // Note: Server-side calls are already protected by the cron endpoint's bearer token auth
+    if (args.sessionId) {
+      // User authentication: verify session and email match
+      await requireEmailMatch(ctx, args.sessionId, args.email);
+    } else if (args.cronSecret) {
+      // Server authentication: verify cron secret
+      validateCronSecret(args.cronSecret);
+    } else {
+      // No authentication provided
+      throw new Error(
+        "Authentication required: provide either sessionId or cronSecret",
+      );
+    }
+
     const subscription = await ctx.db
       .query("subscriptions")
       .withIndex("by_email", (q) => q.eq("email", args.email))

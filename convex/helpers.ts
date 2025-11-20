@@ -42,3 +42,31 @@ export async function requireEmailMatch(
     throw new Error("Unauthorized: email mismatch");
   }
 }
+
+/**
+ * Validates a cron secret for server-side authentication.
+ * Throws an error if the secret is invalid.
+ * The CRON_SECRET should be set as a Convex environment variable.
+ */
+export function validateCronSecret(cronSecret: string | undefined): void {
+  if (!cronSecret) {
+    throw new Error("Cron secret required for server-side calls");
+  }
+
+  // Get the expected secret from Convex environment variables
+  // Set this in your Convex dashboard: npx convex env set CRON_SECRET <value>
+  const expectedSecret = process.env.CRON_SECRET;
+
+  if (!expectedSecret) {
+    // In development, allow if CRON_SECRET env var is not set (for local testing)
+    // In production, this should always be set
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("CRON_SECRET not configured in Convex");
+    }
+    return; // Allow in development if not configured
+  }
+
+  if (cronSecret !== expectedSecret) {
+    throw new Error("Invalid cron secret");
+  }
+}
