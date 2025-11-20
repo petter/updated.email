@@ -118,7 +118,9 @@ export default async function Dashboard({
         </header>
 
         {/* Subscribed Packages Section */}
-        <SubscribedPackages email={email} sessionId={sessionId} />
+        {sessionId && (
+          <SubscribedPackages email={email} sessionId={sessionId} />
+        )}
 
         {/* Subscription Management Section */}
         <section className="space-y-4">

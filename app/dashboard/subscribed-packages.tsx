@@ -19,7 +19,7 @@ import { getSessionIdFromCookie } from "@/lib/client-auth";
 
 interface SubscribedPackagesProps {
   email: string;
-  sessionId: string | null;
+  sessionId: string;
 }
 
 function formatDate(timestamp: number): string {
