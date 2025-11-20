@@ -89,7 +89,7 @@ export default async function Dashboard({
             <AlertTitle>Subscription Confirmed!</AlertTitle>
             <AlertDescription>
               Thank you for verifying your email address. You are now subscribed
-              to updated.email.
+              to weekly updates.
             </AlertDescription>
           </Alert>
         )}
@@ -133,8 +133,8 @@ export default async function Dashboard({
             <CardHeader>
               <CardTitle className="text-lg">Manage Newsletter</CardTitle>
               <CardDescription>
-                You are currently subscribed to updated.email newsletters. You
-                can unsubscribe at any time.
+                You are currently subscribed to receive weekly updates. You can
+                unsubscribe at any time.
               </CardDescription>
             </CardHeader>
             <CardContent>

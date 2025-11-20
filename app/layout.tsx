@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "updated.email",
   description:
-    "updated.email is the automated npm release briefing built for developers.",
+    "Subscribe to your favorite npm packages and receive weekly updates on their latest releases.",
 };
 
 export default function RootLayout({

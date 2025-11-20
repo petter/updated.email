@@ -11,16 +11,17 @@ import { NewsletterForm } from "./newsletter-form";
 
 const highlights = [
   {
-    title: "Fresh releases",
-    description: "Weekly snapshots of every npm package you care about.",
+    title: "Follow your favorites",
+    description: "Choose the npm packages you actually use and care about.",
   },
   {
-    title: "Meaningful signals",
-    description: "Changelogs, adoption trends, and compatibility hints.",
+    title: "Weekly updates",
+    description: "Receive a summary of what's been published in the last week.",
   },
   {
-    title: "Actionable alerts",
-    description: "Know when it's time to upgrade or investigate a regression.",
+    title: "Stay up-to-date",
+    description:
+      "Keep up with the latest trends and changes in the frontend ecosystem.",
   },
 ];
 
@@ -43,15 +44,12 @@ export default function Home() {
           </Badge>
           <div className="space-y-4">
             <h1 className="text-4xl font-semibold leading-tight text-neutral-900 dark:text-white sm:text-5xl">
-              Stay ahead of your dependencies
+              Become a better frontend developer
             </h1>
             <p className="text-lg text-neutral-600 dark:text-neutral-300">
-              Add the packages that matter, get a curated weekly brief on new
-              releases, breaking changes, and adoption signals.
-            </p>
-            <p className="text-base text-neutral-500 dark:text-neutral-400">
-              Purpose-built for developers who want an automated npm release
-              radar.
+              Subscribe to your favorite npm packages and receive weekly updates
+              on their latest releases. Stay current with the changing frontend
+              landscape without the noise.
             </p>
           </div>
         </header>
