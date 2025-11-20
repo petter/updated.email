@@ -37,7 +37,7 @@ export const subscribe = mutation({
     await ctx.db.insert("verification_tokens", {
       token,
       email: args.email,
-      expiresAt: Date.now() + 1000 * 60 * 60 * 24, // 24 hours
+      expiresAt: Date.now() + 1000 * 60 * 60 * 24 * 7, // 7 days (1 week)
     });
 
     return { success: true, token };
