@@ -1,4 +1,18 @@
-import type { CSSProperties } from "react";
+import {
+  Body,
+  Button,
+  Column,
+  Container,
+  Head,
+  Heading,
+  Html,
+  Link,
+  Preview,
+  Row,
+  Section,
+  Tailwind,
+  Text,
+} from "@react-email/components";
 import type { PackageUpdateResult } from "@/lib/npm";
 import type { ChangelogEntry } from "@/lib/types";
 import { EmailFooter } from "./email-footer";
@@ -21,201 +35,120 @@ export function NewsletterEmail({
   );
 
   return (
-    <div style={styles.body}>
-      <table width="100%" cellPadding="0" cellSpacing="0" style={styles.card}>
-        <tbody>
-          <tr>
-            <td>
-              <p style={styles.kicker}>updated.email</p>
-              <h1 style={styles.title}>Your Weekly Package Updates</h1>
+    <Html>
+      <Head />
+      <Preview>Your Weekly Package Updates</Preview>
+      <Tailwind>
+        <Body className="bg-[#f8f8f7] p-6 text-[#11181c] font-sans">
+          <Container className="max-w-[600px] mx-auto">
+            <Section className="bg-white rounded-[18px] p-8">
+              <Text className="uppercase text-xs tracking-wider text-[#687076] m-0 mb-3">
+                updated.email
+              </Text>
+              <Heading className="text-[28px] m-0 mb-4 leading-[1.3] text-[#11181c]">
+                Your Weekly Package Updates
+              </Heading>
               {!hasUpdates ? (
-                <p style={styles.paragraph}>
+                <Text className="text-[15px] leading-[1.6] m-0 mb-6 text-[#11181c]">
                   No new updates this week for the packages you're subscribed
                   to. Check back next week!
-                </p>
+                </Text>
               ) : (
                 <>
-                  <p style={styles.paragraph}>
+                  <Text className="text-[15px] leading-[1.6] m-0 mb-6 text-[#11181c]">
                     Here are the latest updates for the packages you're
                     following:
-                  </p>
+                  </Text>
                   {packageUpdates.map((pkg) => {
                     if (pkg.error || pkg.versions.length === 0) {
                       return null;
                     }
 
                     return (
-                      <div key={pkg.packageName} style={styles.packageSection}>
-                        <h2 style={styles.packageName}>{pkg.packageName}</h2>
+                      <Section
+                        key={pkg.packageName}
+                        className="mb-8 pb-6 border-b border-neutral-200"
+                      >
+                        <Heading
+                          as="h2"
+                          className="text-xl font-semibold m-0 mb-4 text-[#11181c]"
+                        >
+                          {pkg.packageName}
+                        </Heading>
                         {pkg.versions.map((version) => {
                           const changelog = pkg.changelogs[version.version];
                           return (
-                            <div
+                            <Section
                               key={version.version}
-                              style={styles.versionSection}
+                              className="mb-5 pl-4 border-l-[3px] border-[#0070f3]"
                             >
-                              <div style={styles.versionHeader}>
-                                <span style={styles.versionBadge}>
-                                  {version.version}
-                                </span>
-                                <span style={styles.versionDate}>
-                                  {new Date(
-                                    version.publishedAt,
-                                  ).toLocaleDateString("en-US", {
-                                    year: "numeric",
-                                    month: "short",
-                                    day: "numeric",
-                                  })}
-                                </span>
-                              </div>
+                              <Row>
+                                <Column className="w-auto align-middle pr-3">
+                                  <Text className="text-sm font-semibold text-[#0070f3] bg-[#e6f2ff] px-[10px] py-1 rounded-md m-0 inline-block">
+                                    {version.version}
+                                  </Text>
+                                </Column>
+                                <Column className="w-auto align-middle">
+                                  <Text className="text-[13px] text-[#687076] m-0">
+                                    {new Date(
+                                      version.publishedAt,
+                                    ).toLocaleDateString("en-US", {
+                                      year: "numeric",
+                                      month: "short",
+                                      day: "numeric",
+                                    })}
+                                  </Text>
+                                </Column>
+                              </Row>
                               {changelog ? (
                                 <div
-                                  style={styles.changelog}
+                                  className="text-sm leading-[1.6] text-[#11181c] mb-2"
                                   // biome-ignore lint/security/noDangerouslySetInnerHtml: Changelog content is HTML from GitHub releases API
                                   dangerouslySetInnerHTML={{
                                     __html: changelog.content,
                                   }}
                                 />
                               ) : (
-                                <p style={styles.noChangelog}>
+                                <Text className="text-sm text-[#687076] italic mb-2 m-0">
                                   No changelog available for this version.
-                                </p>
+                                </Text>
                               )}
                               {changelog?.url && (
-                                <a
-                                  href={changelog.url}
-                                  style={styles.releaseLink}
-                                >
-                                  View release →
-                                </a>
+                                <Text className="mt-2 m-0">
+                                  <Link
+                                    href={changelog.url}
+                                    className="text-sm text-[#0070f3] no-underline font-medium"
+                                  >
+                                    View release →
+                                  </Link>
+                                </Text>
                               )}
-                            </div>
+                            </Section>
                           );
                         })}
-                      </div>
+                      </Section>
                     );
                   })}
                 </>
               )}
               {dashboardLink && (
-                <div style={styles.dashboardSection}>
-                  <a href={dashboardLink} style={styles.dashboardButton}>
+                <Section className="mt-8 mb-6 text-center">
+                  <Button
+                    href={dashboardLink}
+                    className="bg-[#0070f3] text-white text-[15px] font-semibold px-6 py-3 rounded-lg no-underline leading-[1.5] inline-block"
+                  >
                     Go to dashboard
-                  </a>
-                </div>
+                  </Button>
+                </Section>
               )}
               <EmailFooter unsubscribeLink={unsubscribeLink} />
-              <p style={styles.signature}>— The updated.email team</p>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+              <Text className="font-semibold mt-6 m-0 text-[#11181c]">
+                — The updated.email team
+              </Text>
+            </Section>
+          </Container>
+        </Body>
+      </Tailwind>
+    </Html>
   );
 }
-
-const styles: Record<string, CSSProperties> = {
-  body: {
-    backgroundColor: "#f8f8f7",
-    padding: "24px",
-    color: "#11181c",
-    fontFamily:
-      '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-  },
-  card: {
-    maxWidth: "600px",
-    margin: "0 auto",
-    backgroundColor: "#ffffff",
-    borderRadius: "18px",
-    padding: "32px",
-  },
-  kicker: {
-    textTransform: "uppercase",
-    fontSize: "12px",
-    letterSpacing: "0.1em",
-    color: "#687076",
-    marginBottom: "12px",
-  },
-  title: {
-    fontSize: "28px",
-    margin: "0 0 16px",
-    lineHeight: 1.3,
-  },
-  paragraph: {
-    fontSize: "15px",
-    lineHeight: 1.6,
-    margin: "0 0 24px",
-  },
-  packageSection: {
-    marginBottom: "32px",
-    paddingBottom: "24px",
-    borderBottom: "1px solid #e5e5e5",
-  },
-  packageName: {
-    fontSize: "20px",
-    fontWeight: 600,
-    margin: "0 0 16px",
-    color: "#11181c",
-  },
-  versionSection: {
-    marginBottom: "20px",
-    paddingLeft: "16px",
-    borderLeft: "3px solid #0070f3",
-  },
-  versionHeader: {
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-    marginBottom: "12px",
-  },
-  versionBadge: {
-    fontSize: "14px",
-    fontWeight: 600,
-    color: "#0070f3",
-    backgroundColor: "#e6f2ff",
-    padding: "4px 10px",
-    borderRadius: "6px",
-  },
-  versionDate: {
-    fontSize: "13px",
-    color: "#687076",
-  },
-  changelog: {
-    fontSize: "14px",
-    lineHeight: 1.6,
-    color: "#11181c",
-    marginBottom: "8px",
-  },
-  noChangelog: {
-    fontSize: "14px",
-    color: "#687076",
-    fontStyle: "italic",
-    marginBottom: "8px",
-  },
-  releaseLink: {
-    fontSize: "14px",
-    color: "#0070f3",
-    textDecoration: "none",
-    fontWeight: 500,
-  },
-  dashboardSection: {
-    marginTop: "32px",
-    marginBottom: "24px",
-    textAlign: "center" as const,
-  },
-  dashboardButton: {
-    display: "inline-block",
-    backgroundColor: "#0070f3",
-    color: "#ffffff",
-    fontSize: "15px",
-    fontWeight: 600,
-    padding: "12px 24px",
-    borderRadius: "8px",
-    textDecoration: "none",
-    lineHeight: 1.5,
-  },
-  signature: {
-    fontWeight: 600,
-    marginTop: "24px",
-  },
-};

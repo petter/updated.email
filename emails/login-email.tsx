@@ -1,4 +1,15 @@
-import type { CSSProperties } from "react";
+import {
+  Body,
+  Container,
+  Head,
+  Heading,
+  Html,
+  Link,
+  Preview,
+  Section,
+  Tailwind,
+  Text,
+} from "@react-email/components";
 
 type LoginEmailProps = {
   loginLink: string;
@@ -6,74 +17,42 @@ type LoginEmailProps = {
 
 export function LoginEmail({ loginLink }: LoginEmailProps) {
   return (
-    <div style={styles.body}>
-      <table width="100%" cellPadding="0" cellSpacing="0" style={styles.card}>
-        <tbody>
-          <tr>
-            <td>
-              <p style={styles.kicker}>updated.email</p>
-              <h1 style={styles.title}>Sign in to your account</h1>
-              <p style={styles.paragraph}>
+    <Html>
+      <Head />
+      <Preview>Sign in to your updated.email dashboard</Preview>
+      <Tailwind>
+        <Body className="bg-[#f8f8f7] p-6 text-[#11181c] font-sans">
+          <Container className="max-w-[520px] mx-auto">
+            <Section className="bg-white rounded-[18px] p-8">
+              <Text className="uppercase text-xs tracking-wider text-[#687076] m-0 mb-3">
+                updated.email
+              </Text>
+              <Heading className="text-[28px] m-0 mb-4 leading-[1.3] text-[#11181c]">
+                Sign in to your account
+              </Heading>
+              <Text className="text-[15px] leading-[1.6] m-0 mb-4 text-[#11181c]">
                 Click the link below to sign in to your updated.email dashboard.
                 This link will expire in 30 days.
-              </p>
-              <p style={styles.paragraph}>
-                <a href={loginLink} style={styles.link}>
+              </Text>
+              <Text className="text-[15px] leading-[1.6] m-0 mb-4 text-[#11181c]">
+                <Link
+                  href={loginLink}
+                  className="text-[#0070f3] no-underline font-semibold"
+                >
                   Sign In
-                </a>
-              </p>
-              <p style={styles.paragraph}>
+                </Link>
+              </Text>
+              <Text className="text-[15px] leading-[1.6] m-0 mb-4 text-[#11181c]">
                 If you didn't request this login link, you can safely ignore
                 this email.
-              </p>
-              <p style={styles.signature}>— The updated.email team</p>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+              </Text>
+              <Text className="font-semibold mt-6 m-0 text-[#11181c]">
+                — The updated.email team
+              </Text>
+            </Section>
+          </Container>
+        </Body>
+      </Tailwind>
+    </Html>
   );
 }
-
-const styles: Record<string, CSSProperties> = {
-  body: {
-    backgroundColor: "#f8f8f7",
-    padding: "24px",
-    color: "#11181c",
-    fontFamily:
-      '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-  },
-  card: {
-    maxWidth: "520px",
-    margin: "0 auto",
-    backgroundColor: "#ffffff",
-    borderRadius: "18px",
-    padding: "32px",
-  },
-  kicker: {
-    textTransform: "uppercase",
-    fontSize: "12px",
-    letterSpacing: "0.1em",
-    color: "#687076",
-    marginBottom: "12px",
-  },
-  title: {
-    fontSize: "28px",
-    margin: "0 0 16px",
-    lineHeight: 1.3,
-  },
-  paragraph: {
-    fontSize: "15px",
-    lineHeight: 1.6,
-    margin: "0 0 16px",
-  },
-  link: {
-    color: "#0070f3",
-    textDecoration: "none",
-    fontWeight: 600,
-  },
-  signature: {
-    fontWeight: 600,
-    marginTop: "24px",
-  },
-};
