@@ -54,3 +54,9 @@ export function WaitlistConfirmationEmail({
     </Html>
   );
 }
+
+WaitlistConfirmationEmail.PreviewProps = {
+  recipientEmail: "user@example.com",
+} satisfies WaitlistConfirmationEmailProps;
+
+export default WaitlistConfirmationEmail;

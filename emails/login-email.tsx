@@ -56,3 +56,9 @@ export function LoginEmail({ loginLink }: LoginEmailProps) {
     </Html>
   );
 }
+
+LoginEmail.PreviewProps = {
+  loginLink: "https://updated.email/login/token123",
+} satisfies LoginEmailProps;
+
+export default LoginEmail;

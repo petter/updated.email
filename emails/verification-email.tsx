@@ -62,3 +62,10 @@ export function VerificationEmail({
     </Html>
   );
 }
+
+VerificationEmail.PreviewProps = {
+  validationLink: "https://updated.email/verify/token123",
+  unsubscribeLink: "https://updated.email/unsubscribe/token123",
+} satisfies VerificationEmailProps;
+
+export default VerificationEmail;

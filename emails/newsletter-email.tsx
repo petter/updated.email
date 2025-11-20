@@ -13,8 +13,8 @@ import {
   Tailwind,
   Text,
 } from "@react-email/components";
-import type { PackageUpdateResult } from "@/lib/npm";
-import type { ChangelogEntry } from "@/lib/types";
+import type { PackageUpdateResult } from "../lib/npm";
+import type { ChangelogEntry } from "../lib/types";
 import { EmailFooter } from "./email-footer";
 
 type NewsletterEmailProps = {
@@ -152,3 +152,58 @@ export function NewsletterEmail({
     </Html>
   );
 }
+
+NewsletterEmail.PreviewProps = {
+  packageUpdates: [
+    {
+      packageName: "react",
+      versions: [
+        {
+          version: "19.0.0",
+          publishedAt: new Date("2024-12-01"),
+        },
+        {
+          version: "18.3.1",
+          publishedAt: new Date("2024-11-15"),
+        },
+      ],
+      changelogs: {
+        "19.0.0": {
+          version: "19.0.0",
+          content:
+            "<p>React 19 includes new features like Actions, useOptimistic, and improved hydration.</p>",
+          url: "https://react.dev/blog/2024/12/05/react-19",
+          publishedAt: "2024-12-01",
+        },
+        "18.3.1": {
+          version: "18.3.1",
+          content: "<p>Bug fixes and performance improvements.</p>",
+          url: "https://github.com/facebook/react/releases/tag/v18.3.1",
+          publishedAt: "2024-11-15",
+        },
+      },
+    },
+    {
+      packageName: "next",
+      versions: [
+        {
+          version: "15.0.0",
+          publishedAt: new Date("2024-11-20"),
+        },
+      ],
+      changelogs: {
+        "15.0.0": {
+          version: "15.0.0",
+          content:
+            "<p>Next.js 15 introduces React 19 support and improved caching.</p>",
+          url: "https://nextjs.org/blog/next-15",
+          publishedAt: "2024-11-20",
+        },
+      },
+    },
+  ],
+  unsubscribeLink: "https://updated.email/unsubscribe/token123",
+  dashboardLink: "https://updated.email/dashboard",
+} satisfies NewsletterEmailProps;
+
+export default NewsletterEmail;
