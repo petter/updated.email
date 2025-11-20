@@ -1,5 +1,5 @@
+import Image from "next/image";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -39,9 +39,18 @@ export default function Home() {
 
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-12">
         <header className="space-y-4 text-center">
-          <Badge variant="outline" className="uppercase tracking-wide">
-            updated.email
-          </Badge>
+          <div className="mb-6">
+            <Image
+              src="/logo.svg"
+              alt="updated.email logo"
+              width={40}
+              height={40}
+              className="h-10 w-auto mx-auto mb-3"
+            />
+            <span className="uppercase tracking-wide text-neutral-600 dark:text-neutral-400 font-medium text-lg block">
+              updated.email
+            </span>
+          </div>
           <div className="space-y-4">
             <h1 className="text-4xl font-semibold leading-tight text-neutral-900 dark:text-white sm:text-5xl">
               Become a better frontend developer

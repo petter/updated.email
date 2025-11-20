@@ -6,6 +6,7 @@ import {
   Head,
   Heading,
   Html,
+  Img,
   Link,
   Preview,
   Row,
@@ -42,6 +43,13 @@ export function NewsletterEmail({
         <Body className="bg-[#f8f8f7] p-6 text-[#11181c] font-sans">
           <Container className="max-w-[600px] mx-auto">
             <Section className="bg-white rounded-[18px] p-8">
+              <Img
+                src="https://updated.email/logo.svg"
+                alt="updated.email"
+                width="40"
+                height="40"
+                className="mb-4"
+              />
               <Text className="uppercase text-xs tracking-wider text-[#687076] m-0 mb-3">
                 updated.email
               </Text>
@@ -135,7 +143,7 @@ export function NewsletterEmail({
                 <Section className="mt-8 mb-6 text-center">
                   <Button
                     href={dashboardLink}
-                    className="bg-[#0070f3] text-white text-[15px] font-semibold px-6 py-3 rounded-lg no-underline leading-[1.5] inline-block"
+                    className="bg-[#0070f3] text-white text-[15px] font-semibold px-6 py-3 rounded-lg no-underline leading-normal inline-block"
                   >
                     Go to dashboard
                   </Button>

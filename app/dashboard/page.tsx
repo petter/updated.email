@@ -1,4 +1,5 @@
 import { ConvexHttpClient } from "convex/browser";
+import Image from "next/image";
 import Link from "next/link";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
@@ -55,10 +56,22 @@ export default async function Dashboard({
       <main className="min-h-screen bg-linear-to-b from-neutral-50 via-white to-neutral-100 px-6 py-16 dark:from-neutral-950 dark:via-black dark:to-neutral-950">
         <div className="mx-auto w-full max-w-2xl space-y-8">
           <header className="text-center">
-            <h1 className="text-4xl font-semibold text-neutral-900 dark:text-white">
-              Dashboard
-            </h1>
-            <p className="mt-2 text-lg text-neutral-600 dark:text-neutral-300">
+            <Link
+              href="/"
+              className="flex items-center justify-center gap-3 mb-6"
+            >
+              <Image
+                src="/logo.svg"
+                alt="updated.email logo"
+                width={40}
+                height={40}
+                className="h-10 w-auto"
+              />
+              <span className="uppercase tracking-wide text-neutral-600 dark:text-neutral-400 font-medium text-lg">
+                updated.email
+              </span>
+            </Link>
+            <p className="text-lg text-neutral-600 dark:text-neutral-300">
               Sign in to manage your package subscriptions
             </p>
           </header>
@@ -94,13 +107,22 @@ export default async function Dashboard({
           </Alert>
         )}
         {/* Header */}
-        <header className="flex items-center justify-between">
+        <header className="flex items-start justify-between">
           <div>
-            <h1 className="text-4xl font-semibold text-neutral-900 dark:text-white">
-              Dashboard
-            </h1>
-            <p className="mt-2 text-lg text-neutral-600 dark:text-neutral-300">
-              Manage your package subscriptions
+            <Link href="/" className="flex items-center gap-3 mb-4">
+              <Image
+                src="/logo.svg"
+                alt="updated.email logo"
+                width={32}
+                height={32}
+                className="h-8 w-auto"
+              />
+              <span className="uppercase tracking-wide text-neutral-600 dark:text-neutral-400 font-medium">
+                updated.email
+              </span>
+            </Link>
+            <p className="text-lg text-neutral-600 dark:text-neutral-300">
+              Manage your subscription
             </p>
             <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
               Signed in as {email}

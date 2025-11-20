@@ -4,6 +4,7 @@ import {
   Head,
   Heading,
   Html,
+  Img,
   Link,
   Preview,
   Section,
@@ -24,6 +25,13 @@ export function LoginEmail({ loginLink }: LoginEmailProps) {
         <Body className="bg-[#f8f8f7] p-6 text-[#11181c] font-sans">
           <Container className="max-w-[520px] mx-auto">
             <Section className="bg-white rounded-[18px] p-8">
+              <Img
+                src="https://updated.email/logo.svg"
+                alt="updated.email"
+                width="40"
+                height="40"
+                className="mb-4"
+              />
               <Text className="uppercase text-xs tracking-wider text-[#687076] m-0 mb-3">
                 updated.email
               </Text>
