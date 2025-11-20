@@ -53,7 +53,7 @@ export default function Home() {
           </div>
           <div className="space-y-4">
             <h1 className="text-4xl font-semibold leading-tight text-foreground sm:text-5xl">
-              Become a better frontend developer
+              Stay up-to-date with the latest frontend news
             </h1>
             <p className="text-lg text-muted-foreground">
               Subscribe to your favorite npm packages and receive weekly updates
