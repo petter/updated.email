@@ -28,7 +28,11 @@ export function UnsubscribeButton({ token }: UnsubscribeButtonProps) {
 
   return (
     <Button variant="destructive" asChild>
-      <Link href={`/unsubscribe/${token}`} onClick={handleClick}>
+      <Link
+        href={`/unsubscribe/${token}`}
+        onClick={handleClick}
+        prefetch={false}
+      >
         Unsubscribe from newsletters
       </Link>
     </Button>
