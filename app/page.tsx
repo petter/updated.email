@@ -39,15 +39,15 @@ export default function Home() {
 
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-12">
         <header className="space-y-4 text-center">
-          <div className="mb-6">
+          <div className="mb-6 flex items-center justify-center gap-3">
             <Image
               src="/logo.svg"
               alt="updated.email logo"
               width={40}
               height={40}
-              className="h-10 w-auto mx-auto mb-3"
+              className="h-10 w-auto"
             />
-            <span className="uppercase tracking-wide text-muted-foreground font-medium text-lg block">
+            <span className="uppercase tracking-wide text-muted-foreground font-medium text-lg">
               updated.email
             </span>
           </div>
