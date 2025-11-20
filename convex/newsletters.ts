@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { getAuthenticatedEmail, requireEmailMatch } from "./helpers";
+import { requireEmailMatch } from "./helpers";
 
 /**
  * Records a newsletter send in the database.

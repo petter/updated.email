@@ -294,7 +294,7 @@ export const getAllActiveSubscriptions = query({
   args: {
     sessionId: v.optional(v.string()),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx) => {
     // This function is called from server-side cron jobs and potentially from admin UI
     // If sessionId is provided, validate it; otherwise allow server-side calls
     // In production, consider adding admin role check or server secret validation
