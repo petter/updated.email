@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import posthog from "posthog-js";
-import { PostHogProvider } from "posthog-js/react";
 import { ConvexClientProvider } from "./convex-provider";
+import { PostHogProvider } from "./posthog-provider";
 
 import "./globals.css";
 
@@ -32,7 +31,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <PostHogProvider client={posthog}>
+        <PostHogProvider>
           <ConvexClientProvider>{children}</ConvexClientProvider>
         </PostHogProvider>
       </body>
