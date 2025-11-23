@@ -9,7 +9,7 @@ import {
   Tailwind,
   Text,
 } from "@react-email/components";
-import { EmailHeader } from "./email-header";
+import { EmailHeader } from "./components/email-header";
 
 type LoginEmailProps = {
   loginLink: string;

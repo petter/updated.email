@@ -9,8 +9,8 @@ import {
   Tailwind,
   Text,
 } from "@react-email/components";
-import { EmailFooter } from "./email-footer";
-import { EmailHeader } from "./email-header";
+import { EmailFooter } from "./components/email-footer";
+import { EmailHeader } from "./components/email-header";
 
 type VerificationEmailProps = {
   validationLink: string;

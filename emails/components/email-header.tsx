@@ -10,8 +10,8 @@ export function EmailHeader({ heading }: EmailHeaderProps) {
       <Row className="mb-3" align="left">
         <Column align="left" width="50px">
           <Img
-            src="https://updated.email/logo.svg"
-            alt="updated.email"
+            src="https://www.updated.email/logo.svg"
+            alt=""
             width="40"
             height="40"
             className="m-0"
