@@ -15,7 +15,7 @@ const convex = new ConvexHttpClient(env.NEXT_PUBLIC_CONVEX_URL);
  * cron jobs. For local testing, include the Authorization header:
  * curl -H "Authorization: Bearer YOUR_CRON_SECRET" http://localhost:3000/api/cron/send-newsletters
  */
-export async function POST(request: NextRequest) {
+export async function GET(request: NextRequest) {
   // Verify authorization header
   const authHeader = request.headers.get("authorization");
   const expectedAuth = `Bearer ${env.CRON_SECRET}`;
