@@ -3,6 +3,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { api } from "@/convex/_generated/api";
 import { env } from "@/env";
 import { clearSessionCookie, getSessionFromCookie } from "@/lib/auth";
+import { posthog } from "@/lib/posthog";
 
 const convex = new ConvexHttpClient(env.NEXT_PUBLIC_CONVEX_URL);
 
@@ -25,6 +26,15 @@ export async function GET(
       return NextResponse.redirect(
         new URL(`/unsubscribed?error=${errorMessage}`, request.url),
       );
+    }
+
+    // Track subscription cancelled
+    if (result.email) {
+      posthog.capture({
+        distinctId: result.email,
+        event: "subscription_cancelled",
+        properties: { email: result.email },
+      });
     }
 
     // Log out the user by deleting session and clearing cookie (if they're logged in)

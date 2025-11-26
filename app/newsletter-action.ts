@@ -4,6 +4,7 @@ import { ConvexHttpClient } from "convex/browser";
 import { api } from "@/convex/_generated/api";
 import { env } from "@/env";
 import { sendVerificationEmail } from "@/lib/newsletter";
+import { posthog } from "@/lib/posthog";
 
 const convex = new ConvexHttpClient(env.NEXT_PUBLIC_CONVEX_URL);
 
@@ -39,6 +40,13 @@ export async function submitNewsletterAction(
       // Send verification email
       await sendVerificationEmail({ recipient: email, token: result.token });
     }
+
+    // Track subscription initiated
+    posthog.capture({
+      distinctId: email,
+      event: "subscription_initiated",
+      properties: { email },
+    });
 
     return {
       success: true,

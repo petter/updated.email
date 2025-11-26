@@ -2,6 +2,7 @@ import { ConvexHttpClient } from "convex/browser";
 import { NextResponse } from "next/server";
 import { api } from "@/convex/_generated/api";
 import { env } from "@/env";
+import { posthog } from "@/lib/posthog";
 
 const convex = new ConvexHttpClient(env.NEXT_PUBLIC_CONVEX_URL);
 
@@ -16,6 +17,13 @@ export async function GET(
     const result = await convex.mutation(api.subscriptions.verify, { token });
 
     if (result.success && result.email) {
+      // Track subscription verified
+      posthog.capture({
+        distinctId: result.email,
+        event: "subscription_verified",
+        properties: { email: result.email },
+      });
+
       // Create a session for the user
       const sessionResult = await convex.mutation(api.auth.createSession, {
         email: result.email,
