@@ -1,7 +1,8 @@
 "use client";
 
 import { useMutation, useQuery } from "convex/react";
-import { useState } from "react";
+import { usePostHog } from "posthog-js/react";
+import { useEffect, useState } from "react";
 import { PackageSelect } from "@/components/package-select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -37,6 +38,7 @@ export function SubscribedPackages({
 }: SubscribedPackagesProps) {
   // Fallback to reading from cookie if sessionId prop is not provided
   const effectiveSessionId = sessionId ?? getSessionIdFromCookie();
+  const posthog = usePostHog();
 
   const packages = useQuery(api.subscriptions.getPackageSubscriptions, {
     email,
@@ -48,6 +50,17 @@ export function SubscribedPackages({
   );
   const [error, setError] = useState<string | null>(null);
 
+  // Update PostHog user properties when packages change
+  useEffect(() => {
+    if (packages && posthog) {
+      const packageNames = packages.map((pkg) => pkg.packageName);
+      posthog.identify(email, {
+        subscribed_packages: packageNames,
+        subscribed_packages_count: packageNames.length,
+      });
+    }
+  }, [packages, posthog, email]);
+
   const handleAddPackage = async (packageName: string) => {
     setError(null);
     try {
@@ -58,6 +71,10 @@ export function SubscribedPackages({
       });
       if (!result.success) {
         setError(result.message || "Failed to add package");
+      } else {
+        posthog.capture("package_subscribed", {
+          package_name: packageName,
+        });
       }
     } catch (err) {
       setError("Failed to add package. Please try again.");
@@ -75,6 +92,10 @@ export function SubscribedPackages({
       });
       if (!result.success) {
         setError(result.message || "Failed to remove package");
+      } else {
+        posthog.capture("package_unsubscribed", {
+          package_name: packageName,
+        });
       }
     } catch (err) {
       setError("Failed to remove package. Please try again.");
