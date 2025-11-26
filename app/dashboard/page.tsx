@@ -14,6 +14,7 @@ import { env } from "@/env";
 import { getAuthenticatedEmail, getSessionId } from "@/lib/auth";
 import { LoginForm } from "./login-form";
 import { LogoutButton } from "./logout-button";
+import { PostHogIdentify } from "./posthog-identify";
 import { SubscribedPackages } from "./subscribed-packages";
 import { UnsubscribeButton } from "./unsubscribe-button";
 
@@ -96,6 +97,7 @@ export default async function Dashboard({
 
   return (
     <main className="min-h-screen bg-background px-6 py-16">
+      <PostHogIdentify email={email} />
       <div className="mx-auto w-full max-w-6xl space-y-12">
         {isVerified && (
           <Alert className="border-green-200 bg-green-50 text-green-900 dark:border-green-900 dark:bg-green-950/30 dark:text-green-100">
