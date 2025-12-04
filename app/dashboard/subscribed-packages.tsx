@@ -70,6 +70,9 @@ export function SubscribedPackages({
     sessionId: effectiveSessionId ?? undefined,
   });
   const addPackage = useMutation(api.subscriptions.addPackageSubscription);
+  const addPackagesBulk = useMutation(
+    api.subscriptions.addPackageSubscriptionsBulk,
+  );
   const removePackage = useMutation(
     api.subscriptions.removePackageSubscription,
   );
@@ -133,20 +136,21 @@ export function SubscribedPackages({
     }
 
     try {
-      for (const packageName of toAdd) {
-        const result = await addPackage({
-          email,
-          packageName,
-          sessionId: effectiveSessionId ?? undefined,
-        });
+      const result = await addPackagesBulk({
+        email,
+        packageNames: toAdd,
+        sessionId: effectiveSessionId ?? undefined,
+      });
 
-        if (!result.success) {
-          setError(result.message || `Failed to add ${packageName}`);
-          break;
-        }
+      if (!result.success) {
+        setError("Failed to add favorites.");
+        return;
+      }
 
-        posthog.capture("package_subscribed", {
-          package_name: packageName,
+      if (result.added && result.added.length > 0) {
+        posthog.capture("packages_subscribed_bulk", {
+          package_names: result.added,
+          count: result.added.length,
         });
       }
     } catch (err) {

@@ -251,6 +251,51 @@ export const addPackageSubscription = mutation({
   },
 });
 
+export const addPackageSubscriptionsBulk = mutation({
+  args: {
+    email: v.string(),
+    packageNames: v.array(v.string()),
+    sessionId: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    await requireEmailMatch(ctx, args.sessionId, args.email);
+
+    const uniquePackages = Array.from(
+      new Set(
+        args.packageNames
+          .map((name) => name.trim())
+          .filter((name) => name.length > 0),
+      ),
+    );
+
+    if (uniquePackages.length === 0) {
+      return { success: true, added: [], skipped: [] };
+    }
+
+    const existing = await ctx.db
+      .query("package_subscriptions")
+      .withIndex("by_email", (q) => q.eq("email", args.email))
+      .collect();
+
+    const existingSet = new Set(existing.map((sub) => sub.packageName));
+    const toInsert = uniquePackages.filter(
+      (packageName) => !existingSet.has(packageName),
+    );
+
+    for (const packageName of toInsert) {
+      await ctx.db.insert("package_subscriptions", {
+        email: args.email,
+        packageName,
+        subscribedAt: Date.now(),
+      });
+    }
+
+    const skipped = uniquePackages.filter((name) => existingSet.has(name));
+
+    return { success: true, added: toInsert, skipped };
+  },
+});
+
 export const removePackageSubscription = mutation({
   args: {
     email: v.string(),
