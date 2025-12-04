@@ -23,6 +23,31 @@ interface SubscribedPackagesProps {
   sessionId: string;
 }
 
+const favouritePackages = [
+  "react",
+  "next",
+  "svelte",
+  "astro",
+  "tailwindcss",
+  "biome",
+  "@biomejs/biome",
+  "prettier",
+  "oxfmt",
+  "oxlint",
+  "eslint",
+  "typescript",
+  "@tanstack/react-query",
+  "@tanstack/react-table",
+  "@tanstack/react-router",
+  "@tanstack/react-db",
+  "@tanstack/ai",
+  "ai",
+  "vite",
+  "vitest",
+  "pnpm",
+  "bun",
+];
+
 function formatDate(timestamp: number): string {
   const date = new Date(timestamp);
   return date.toLocaleDateString("en-US", {
@@ -49,6 +74,17 @@ export function SubscribedPackages({
     api.subscriptions.removePackageSubscription,
   );
   const [error, setError] = useState<string | null>(null);
+  const [isAddingFavorites, setIsAddingFavorites] = useState(false);
+  const [showAllFavorites, setShowAllFavorites] = useState(false);
+
+  const maxVisibleFavorites = 5;
+  const hasHiddenFavorites = favouritePackages.length > maxVisibleFavorites;
+  const visibleFavorites = showAllFavorites
+    ? favouritePackages
+    : favouritePackages.slice(0, maxVisibleFavorites);
+  const hiddenFavoritesCount = hasHiddenFavorites
+    ? favouritePackages.length - maxVisibleFavorites
+    : 0;
 
   // Update PostHog user properties when packages change
   useEffect(() => {
@@ -79,6 +115,45 @@ export function SubscribedPackages({
     } catch (err) {
       setError("Failed to add package. Please try again.");
       console.error("Error adding package:", err);
+    }
+  };
+
+  const handleAddFavorites = async () => {
+    setError(null);
+    setIsAddingFavorites(true);
+
+    const subscribedSet = new Set(packages?.map((pkg) => pkg.packageName));
+    const toAdd = favouritePackages.filter(
+      (packageName) => !subscribedSet.has(packageName),
+    );
+
+    if (toAdd.length === 0) {
+      setIsAddingFavorites(false);
+      return;
+    }
+
+    try {
+      for (const packageName of toAdd) {
+        const result = await addPackage({
+          email,
+          packageName,
+          sessionId: effectiveSessionId ?? undefined,
+        });
+
+        if (!result.success) {
+          setError(result.message || `Failed to add ${packageName}`);
+          break;
+        }
+
+        posthog.capture("package_subscribed", {
+          package_name: packageName,
+        });
+      }
+    } catch (err) {
+      setError("Failed to add favorites. Please try again.");
+      console.error("Error adding favorites:", err);
+    } finally {
+      setIsAddingFavorites(false);
     }
   };
 
@@ -168,6 +243,10 @@ export function SubscribedPackages({
     );
   }
 
+  const hasSubscribedAllFavorites = favouritePackages.every((packageName) =>
+    packages.some((pkg) => pkg.packageName === packageName),
+  );
+
   return (
     <section className="space-y-4">
       <div className="flex items-center justify-between">
@@ -195,6 +274,77 @@ export function SubscribedPackages({
           <PackageSelect onSelect={handleAddPackage} className="w-full" />
         </CardContent>
       </Card>
+
+      {!hasSubscribedAllFavorites && (
+        <Card>
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-lg">Petter&apos;s favorites</CardTitle>
+            <CardDescription>
+              These are the packages that I find most interesting to follow the
+              development of.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-wrap gap-2">
+                {visibleFavorites.map((packageName) => {
+                  const isSubscribed = packages.some(
+                    (pkg) => pkg.packageName === packageName,
+                  );
+
+                  return (
+                    <Badge
+                      key={packageName}
+                      variant={isSubscribed ? "secondary" : "outline"}
+                      className="text-sm"
+                    >
+                      {packageName}
+                    </Badge>
+                  );
+                })}
+                {!showAllFavorites && hiddenFavoritesCount > 0 && (
+                  <Badge variant="outline" className="text-sm">
+                    +{hiddenFavoritesCount} more
+                  </Badge>
+                )}
+              </div>
+              <div className="flex flex-col gap-2 w-full sm:w-auto sm:flex-row sm:items-center sm:justify-end">
+                {hasHiddenFavorites && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowAllFavorites((prev) => !prev)}
+                    className="w-full sm:w-auto"
+                  >
+                    {showAllFavorites ? "Show less" : "Show all"}
+                  </Button>
+                )}
+                <Button
+                  onClick={handleAddFavorites}
+                  disabled={
+                    isAddingFavorites ||
+                    favouritePackages.every((packageName) =>
+                      packages.some((pkg) => pkg.packageName === packageName),
+                    )
+                  }
+                  className="w-full sm:w-auto"
+                >
+                  {isAddingFavorites
+                    ? "Adding..."
+                    : `Add all (${
+                        favouritePackages.filter(
+                          (packageName) =>
+                            !packages.some(
+                              (pkg) => pkg.packageName === packageName,
+                            ),
+                        ).length
+                      })`}
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Packages List */}
       {packages.length === 0 ? (
