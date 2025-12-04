@@ -125,22 +125,45 @@ export function SubscribedPackages({
           </CardContent>
         </Card>
 
-        {/* Package Cards Skeleton */}
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {[1, 2, 3].map((i) => (
-            <Card key={i}>
-              <CardHeader>
-                <Skeleton className="h-6 w-40" />
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <Skeleton className="h-4 w-32" />
-                  <Skeleton className="h-9 w-full" />
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        {/* Package List Skeleton */}
+        <Card className="py-0">
+          <CardContent className="px-6 py-0">
+            <div className="overflow-x-auto">
+              <table className="w-full table-fixed border-collapse">
+                <colgroup>
+                  <col />
+                  <col className="w-[220px]" />
+                  <col className="w-[96px]" />
+                </colgroup>
+                <thead className="sr-only">
+                  <tr>
+                    <th scope="col">Package</th>
+                    <th scope="col">Subscription Date</th>
+                    <th scope="col">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[1, 2, 3].map((i) => (
+                    <tr
+                      key={i}
+                      className="border-b last:border-b-0 align-middle"
+                    >
+                      <td className="py-3">
+                        <Skeleton className="h-6 w-24" />
+                      </td>
+                      <td className="py-3 text-center">
+                        <Skeleton className="h-4 w-40 mx-auto" />
+                      </td>
+                      <td className="py-3 text-right">
+                        <Skeleton className="h-9 w-20 ml-auto" />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
       </section>
     );
   }
@@ -183,35 +206,49 @@ export function SubscribedPackages({
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {packages.map((pkg) => (
-            <Card key={pkg.packageName}>
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <CardTitle className="text-lg">{pkg.packageName}</CardTitle>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="text-sm text-muted-foreground">
-                    <span className="font-medium">Subscribed:</span>{" "}
-                    {formatDate(pkg.subscribedAt)}
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleRemovePackage(pkg.packageName)}
-                    className="w-full"
-                  >
-                    Remove
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <Card className="py-0">
+          <CardContent className="px-6 py-0">
+            <div className="overflow-x-auto">
+              <table className="w-full table-fixed border-collapse">
+                <colgroup>
+                  <col />
+                  <col className="w-[220px]" />
+                  <col className="w-[96px]" />
+                </colgroup>
+                <thead className="sr-only">
+                  <tr>
+                    <th scope="col">Package</th>
+                    <th scope="col">Subscription Date</th>
+                    <th scope="col">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {packages.map((pkg) => (
+                    <tr
+                      key={pkg.packageName}
+                      className="border-b last:border-b-0 align-middle"
+                    >
+                      <td className="py-3 font-semibold">{pkg.packageName}</td>
+                      <td className="py-3 text-center text-sm text-muted-foreground">
+                        Subscribed: {formatDate(pkg.subscribedAt)}
+                      </td>
+                      <td className="py-3 text-right">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleRemovePackage(pkg.packageName)}
+                          className="text-destructive hover:text-destructive"
+                        >
+                          Remove
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
       )}
     </section>
   );
