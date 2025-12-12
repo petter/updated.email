@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { SiteFooter } from "../site-footer";
 
 export default async function UnsubscribedPage(
   props: PageProps<"/unsubscribed">,
@@ -34,6 +35,7 @@ export default async function UnsubscribedPage(
             ← Back to home
           </Link>
         </div>
+        <SiteFooter />
       </div>
     </div>
   );

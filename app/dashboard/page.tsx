@@ -12,6 +12,7 @@ import {
 import { api } from "@/convex/_generated/api";
 import { env } from "@/env";
 import { getAuthenticatedEmail, getSessionId } from "@/lib/auth";
+import { SiteFooter } from "../site-footer";
 import { LoginForm } from "./login-form";
 import { LogoutButton } from "./logout-button";
 import { PostHogIdentify } from "./posthog-identify";
@@ -90,6 +91,7 @@ export default async function Dashboard({
               ← Back to home
             </Link>
           </div>
+          <SiteFooter />
         </div>
       </main>
     );
@@ -166,6 +168,7 @@ export default async function Dashboard({
             </CardContent>
           </Card>
         </section>
+        <SiteFooter />
       </div>
     </main>
   );

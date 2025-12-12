@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { NewsletterForm } from "./newsletter-form";
+import { SiteFooter } from "./site-footer";
 
 const highlights = [
   {
@@ -77,6 +78,7 @@ export default function Home() {
             </li>
           ))}
         </ul>
+        <SiteFooter />
       </div>
     </main>
   );
