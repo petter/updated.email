@@ -13,7 +13,7 @@ interface RequestMetadata {
   secFetchUser?: string;
 }
 
-type TokenFlow = "verify" | "login" | "unsubscribe";
+export type TokenFlow = "verify" | "login" | "unsubscribe";
 type TokenOutcome = "success" | "invalid" | "error";
 
 interface TokenLogOptions {

@@ -187,6 +187,25 @@ export const unsubscribe = mutation({
   },
 });
 
+export const getUnsubscribeTokenEmail = query({
+  args: {
+    token: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const tokenRecord = await ctx.db
+      .query("unsubscribe_tokens")
+      .withIndex("by_token", (q) => q.eq("token", args.token))
+      .first();
+
+    if (!tokenRecord) {
+      return { email: null };
+    }
+
+    // Return email without consuming/deleting the token
+    return { email: tokenRecord.email };
+  },
+});
+
 export const unsubscribeByEmail = mutation({
   args: {
     email: v.string(),
@@ -214,6 +233,31 @@ export const unsubscribeByEmail = mutation({
       unsubscribedAt: Date.now(),
     });
 
+    return { success: true };
+  },
+});
+
+export const unsubscribeByEmailPublic = mutation({
+  args: {
+    email: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // Non-enumerating: always return success, even if subscription doesn't exist
+    // This prevents email enumeration attacks
+    const subscription = await ctx.db
+      .query("subscriptions")
+      .withIndex("by_email", (q) => q.eq("email", args.email))
+      .first();
+
+    if (subscription && subscription.status !== "unsubscribed") {
+      // Mark as unsubscribed if subscription exists and is not already unsubscribed
+      await ctx.db.patch(subscription._id, {
+        status: "unsubscribed",
+        unsubscribedAt: Date.now(),
+      });
+    }
+
+    // Always return success to prevent email enumeration
     return { success: true };
   },
 });
