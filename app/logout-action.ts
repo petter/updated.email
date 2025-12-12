@@ -19,5 +19,5 @@ export async function logoutAction() {
   // Clear cookie
   await clearSessionCookie();
 
-  redirect("/dashboard");
+  redirect("/");
 }
