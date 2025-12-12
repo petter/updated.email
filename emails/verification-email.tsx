@@ -47,9 +47,6 @@ export function VerificationEmail({
                 email.
               </Text>
               <EmailFooter unsubscribeLink={unsubscribeLink} />
-              <Text className="font-semibold mt-6 m-0 text-[#2d1a1a]">
-                — The updated.email team
-              </Text>
             </Section>
           </Container>
         </Body>
