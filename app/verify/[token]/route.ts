@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { api } from "@/convex/_generated/api";
 import { env } from "@/env";
 import { posthog } from "@/lib/posthog";
+import { logTokenConsumption } from "@/lib/request-metadata";
 
 const convex = new ConvexHttpClient(env.NEXT_PUBLIC_CONVEX_URL);
 
@@ -44,8 +45,25 @@ export async function GET(
           path: "/",
         });
 
+        logTokenConsumption({
+          flow: "verify",
+          token,
+          request,
+          outcome: "success",
+          email: result.email,
+          extra: { sessionCreated: true },
+        });
         return response;
       } else {
+        logTokenConsumption({
+          flow: "verify",
+          token,
+          request,
+          outcome: "success",
+          email: result.email,
+          message: "Session creation failed",
+          extra: { sessionCreated: false },
+        });
         // Session creation failed, but verification succeeded
         const url = new URL("/dashboard", origin);
         url.searchParams.set("verified", "true");
@@ -53,6 +71,13 @@ export async function GET(
         return NextResponse.redirect(url);
       }
     } else {
+      logTokenConsumption({
+        flow: "verify",
+        token,
+        request,
+        outcome: "invalid",
+        message: result.message,
+      });
       // Verification failed - redirect to error page
       const url = new URL("/verify/error", origin);
       url.searchParams.set(
@@ -63,6 +88,13 @@ export async function GET(
     }
   } catch (error) {
     console.error("Verification failed", error);
+    logTokenConsumption({
+      flow: "verify",
+      token,
+      request,
+      outcome: "error",
+      message: error instanceof Error ? error.message : "Unknown error",
+    });
     const url = new URL("/verify/error", origin);
     url.searchParams.set("message", "Something went wrong. Please try again.");
     return NextResponse.redirect(url);

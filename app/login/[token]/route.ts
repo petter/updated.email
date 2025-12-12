@@ -2,6 +2,7 @@ import { ConvexHttpClient } from "convex/browser";
 import { NextResponse } from "next/server";
 import { api } from "@/convex/_generated/api";
 import { env } from "@/env";
+import { logTokenConsumption } from "@/lib/request-metadata";
 
 const convex = new ConvexHttpClient(env.NEXT_PUBLIC_CONVEX_URL);
 
@@ -28,8 +29,23 @@ export async function GET(
         path: "/",
       });
 
+      logTokenConsumption({
+        flow: "login",
+        token,
+        request,
+        outcome: "success",
+        email: result.email,
+        extra: { sessionCreated: true },
+      });
       return response;
     } else {
+      logTokenConsumption({
+        flow: "login",
+        token,
+        request,
+        outcome: "invalid",
+        message: result.message,
+      });
       // Redirect to dashboard with error message
       const url = new URL("/dashboard", origin);
       url.searchParams.set(
@@ -40,6 +56,13 @@ export async function GET(
     }
   } catch (error) {
     console.error("Login failed", error);
+    logTokenConsumption({
+      flow: "login",
+      token,
+      request,
+      outcome: "error",
+      message: error instanceof Error ? error.message : "Unknown error",
+    });
     const url = new URL("/dashboard", origin);
     url.searchParams.set("error", "Something went wrong. Please try again.");
     return NextResponse.redirect(url);
