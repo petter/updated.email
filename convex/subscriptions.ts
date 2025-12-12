@@ -48,6 +48,30 @@ export const subscribe = mutation({
   },
 });
 
+export const getVerificationTokenEmail = query({
+  args: {
+    token: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const tokenRecord = await ctx.db
+      .query("verification_tokens")
+      .withIndex("by_token", (q) => q.eq("token", args.token))
+      .first();
+
+    if (!tokenRecord) {
+      return { email: null };
+    }
+
+    // Check expiry but don't delete the token
+    if (tokenRecord.expiresAt && tokenRecord.expiresAt < Date.now()) {
+      return { email: null };
+    }
+
+    // Return email without consuming/deleting the token
+    return { email: tokenRecord.email };
+  },
+});
+
 export const verify = mutation({
   args: {
     token: v.string(),
